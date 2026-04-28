@@ -87,7 +87,15 @@ export default function ResultsPage() {
         setLoading(false);
       }
     }
+    
+    // Fetch immediately on load
     fetchStudents();
+    
+    // Poll for updates every 5 seconds
+    const intervalId = setInterval(fetchStudents, 5000);
+    
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const BANDS = [null, 'Honor Band', 'Symphonic Band', 'Concert Band', 'Intermediate Band'];
