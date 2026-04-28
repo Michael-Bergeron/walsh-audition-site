@@ -1,0 +1,317 @@
+.results-page {
+  width: 100%;
+  padding: 2rem;
+}
+.results-header {
+  margin-bottom: 2rem;
+}
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.custom-dropdown {
+  position: relative;
+}
+
+.dropdown-button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: var(--glass-bg);
+  color: var(--text-color);
+  border: 1px solid var(--glass-border);
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dropdown-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 220px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.dropdown-menu label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.dropdown-menu label:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.columns-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 2rem;
+  padding-bottom: 2rem;
+}
+.instrument-column {
+  flex: 0 0 300px;
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+}
+.column-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0.5rem;
+}
+.students-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.student-result-card {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.student-result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.card-not-started {
+  border-color: rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.5);
+  opacity: 0.8;
+}
+
+.card-evaluated {
+  /* Keeping the slightly different dark color that was implicit */
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.band-honor {
+  background: rgba(234, 179, 8, 0.2) !important;
+  border-color: rgba(234, 179, 8, 0.6) !important;
+}
+
+.band-symphonic {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+.band-concert {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.6) !important;
+}
+
+.band-intermediate {
+  background: rgba(34, 197, 94, 0.2) !important;
+  border-color: rgba(34, 197, 94, 0.6) !important;
+}
+
+.student-result-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.student-number {
+  font-weight: 700;
+  color: #60a5fa;
+  margin-right: 0.5rem;
+}
+.student-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.student-score {
+  font-size: 1.1rem;
+}
+.judged-status {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  font-style: italic;
+  text-align: right;
+}
+.score-tooltip {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 105%;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 1rem;
+  width: max-content;
+  max-width: 300px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 100;
+}
+.student-result-card:hover .score-tooltip {
+  display: block;
+}
+.score-tooltip h4 {
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0.25rem;
+}
+.breakdown-section {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+.breakdown-section ul {
+  list-style: none;
+  padding-left: 0.5rem;
+  color: var(--text-muted);
+}
+.breakdown-section em {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+}
+
+.settings-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s, transform 0.2s;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+.settings-btn:hover {
+  color: var(--text-color);
+  transform: rotate(45deg);
+}
+
+.student-settings-modal {
+  width: 95%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.settings-header h2 {
+  margin: 0;
+}
+
+.btn-delete {
+  background: rgba(220, 38, 38, 0.9);
+  border-color: rgba(220, 38, 38, 1);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+}
+.btn-delete:hover {
+  background: rgba(239, 68, 68, 1);
+  border-color: rgba(239, 68, 68, 1);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.close-x-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+}
+.close-x-btn:hover {
+  color: var(--text-color);
+}
+
+.settings-info p {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.settings-divider {
+  border: 0;
+  height: 1px;
+  background: var(--glass-border);
+  margin: 1.5rem 0;
+}
+
+.settings-scores {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.settings-breakdown-section {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+}
+
+.settings-breakdown-section h3 {
+  margin-bottom: 0.5rem;
+  color: #60a5fa;
+  font-size: 1.1rem;
+}
+
+.settings-breakdown-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-breakdown-section li {
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding-bottom: 0.5rem;
+}
+.settings-breakdown-section li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.comment-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 0.25rem;
+}
