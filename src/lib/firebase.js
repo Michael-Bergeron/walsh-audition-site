@@ -6,17 +6,28 @@ if (!admin.apps.length) {
       ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
       : undefined;
 
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: privateKey,
-      }),
-      databaseURL: "https://walsh-audition-default-rtdb.firebaseio.com"
-    });
+    if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && privateKey) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: privateKey,
+        }),
+        databaseURL: "https://walsh-audition-default-rtdb.firebaseio.com"
+      });
+    }
   } catch (error) {
     console.error('Firebase admin initialization error', error.stack);
   }
 }
 
-export const db = admin.database();
+let dbInstance = null;
+try {
+  if (admin.apps.length > 0) {
+    dbInstance = admin.database();
+  }
+} catch (e) {
+  console.warn("Firebase DB not initialized (expected during build without env vars).");
+}
+
+export const db = dbInstance;
