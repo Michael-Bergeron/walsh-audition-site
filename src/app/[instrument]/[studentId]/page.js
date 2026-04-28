@@ -1,10 +1,16 @@
 import Link from 'next/link';
 import { getSchemaForInstrument } from '@/lib/schema';
+import { db } from '@/lib/firebase';
 
 async function getStudent(id) {
-  const res = await fetch(`http://localhost:3000/api/students/${id}`, { cache: 'no-store' });
-  if (!res.ok) return null;
-  return res.json();
+  if (!db) return null;
+  try {
+    const snapshot = await db.ref(`students/${id}`).once('value');
+    return snapshot.val();
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 export default async function StudentPage({ params }) {

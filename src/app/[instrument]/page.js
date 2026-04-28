@@ -1,10 +1,21 @@
 import Link from 'next/link';
 import { getSchemaForInstrument } from '@/lib/schema';
+import { db } from '@/lib/firebase';
 
 async function getStudents(instrument) {
-  const res = await fetch(`http://localhost:3000/api/students?instrument=${instrument}`, { cache: 'no-store' });
-  if (!res.ok) return [];
-  return res.json();
+  if (!db) return [];
+  try {
+    const snapshot = await db.ref('students').once('value');
+    const studentsData = snapshot.val() || {};
+    let students = Object.values(studentsData);
+    if (instrument) {
+      students = students.filter(s => s.instrument.toLowerCase() === instrument.toLowerCase());
+    }
+    return students;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 export default async function InstrumentPage({ params }) {
