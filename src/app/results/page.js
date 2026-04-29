@@ -296,7 +296,7 @@ export default function ResultsPage() {
                       </button>
                     </div>
                   <div className="student-score">
-                    Grade {student.grade} | S. placement: <strong>{student.studentPlacement || '-'}</strong>
+                    {student.grade} | S. placement: <strong>{student.studentPlacement || '-'}</strong>
                     <br/>
                     Rehearsal Skills: <strong>{student.rehearsalSkills || '-'}</strong>
                   </div>
