@@ -105,6 +105,17 @@
   z-index: 10;
 }
 
+.integrity-checkbox {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  z-index: 5;
+  accent-color: #3b82f6;
+}
+
 .card-not-started {
   border-color: rgba(148, 163, 184, 0.4);
   background: rgba(15, 23, 42, 0.5);

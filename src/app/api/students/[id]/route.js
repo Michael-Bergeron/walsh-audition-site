@@ -21,7 +21,7 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     const { id } = params;
-    const { selection, scores, bandPlacement, firstName, lastName, grade, studentPlacement } = await request.json();
+    const { selection, scores, bandPlacement, firstName, lastName, grade, studentPlacement, auditionIntegrity } = await request.json();
     
     const ref = db.ref(`students/${id}`);
     const snapshot = await ref.once('value');
@@ -36,6 +36,7 @@ export async function PUT(request, { params }) {
     if (lastName !== undefined) student.lastName = lastName;
     if (grade !== undefined) student.grade = parseInt(grade);
     if (studentPlacement !== undefined) student.studentPlacement = studentPlacement || null;
+    if (auditionIntegrity !== undefined) student.auditionIntegrity = auditionIntegrity;
     
     if (selection && scores) {
       if (!student.scores) student.scores = {};

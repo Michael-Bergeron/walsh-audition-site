@@ -122,6 +122,25 @@ export default function ResultsPage() {
     }
   };
 
+  const handleIntegrityToggle = async (e, student) => {
+    e.stopPropagation();
+    const newValue = !student.auditionIntegrity;
+    
+    setStudents(prev => prev.map(s => 
+      s.id === student.id ? { ...s, auditionIntegrity: newValue } : s
+    ));
+    
+    try {
+      await fetch(`/api/students/${student.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ auditionIntegrity: newValue })
+      });
+    } catch (e) {
+      console.error('Failed to update audition integrity', e);
+    }
+  };
+
   // totalScore is now pre-calculated by the backend
 
   const getScoredCount = (scores, instrument) => {
@@ -288,6 +307,15 @@ export default function ResultsPage() {
                         : `${student.scoredCount} out of ${student.totalSelections} judged`}
                     </div>
                   )}
+                  
+                  <input
+                    type="checkbox"
+                    className="integrity-checkbox"
+                    checked={student.auditionIntegrity || false}
+                    onChange={(e) => handleIntegrityToggle(e, student)}
+                    onClick={(e) => e.stopPropagation()}
+                    title="Audition Integrity"
+                  />
                   
                   {/* Tooltip on hover */}
                   <div className="score-tooltip">
