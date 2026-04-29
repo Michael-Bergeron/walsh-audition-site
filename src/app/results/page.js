@@ -25,12 +25,12 @@ export default function ResultsPage() {
   const handleSelectStudent = (student) => {
     setSelectedStudent(student);
     setIsEditing(false);
-    if (student) {
       setEditForm({
         firstName: student.firstName,
         lastName: student.lastName,
         grade: student.grade,
-        studentPlacement: student.studentPlacement || ''
+        studentPlacement: student.studentPlacement || '',
+        rehearsalSkills: student.rehearsalSkills || ''
       });
     }
   };
@@ -295,9 +295,9 @@ export default function ResultsPage() {
                       </button>
                     </div>
                   <div className="student-score">
-                    Grade {student.grade} | Placement: <strong>{student.placementRank}</strong>
+                    Grade {student.grade} | S. placement: <strong>{student.studentPlacement || '-'}</strong>
                     <br/>
-                    Total: <strong>{student.totalScore}</strong>
+                    Rehearsal Skills: <strong>{student.rehearsalSkills || '-'}</strong>
                   </div>
                   
                   <div className="card-footer">
@@ -309,13 +309,9 @@ export default function ResultsPage() {
                       onClick={(e) => e.stopPropagation()}
                       title="Audition Integrity"
                     />
-                    {student.scoredCount > 0 && (
-                      <div className="judged-status">
-                        {student.scoredCount === student.totalSelections 
-                          ? "Fully judged" 
-                          : `${student.scoredCount} out of ${student.totalSelections} judged`}
-                      </div>
-                    )}
+                    <div className="total-score-large" title="Total Score">
+                      {student.totalScore}
+                    </div>
                   </div>
                   
                   {/* Tooltip on hover */}
@@ -386,6 +382,13 @@ export default function ResultsPage() {
                   <div>
                     <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Student Placement</label>
                     <input type="text" value={editForm.studentPlacement} onChange={e => setEditForm({...editForm, studentPlacement: e.target.value})} placeholder="Optional" />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Rehearsal Skills (1-4)</label>
+                    <select value={editForm.rehearsalSkills} onChange={e => setEditForm({...editForm, rehearsalSkills: e.target.value})}>
+                      <option value="">-</option>
+                      {[1, 2, 3, 4].map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
                   </div>
                   <button className="btn" onClick={handleSaveEdit} style={{ marginTop: '1rem' }}>Save Changes</button>
                 </div>

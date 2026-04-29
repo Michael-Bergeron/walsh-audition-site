@@ -170,12 +170,12 @@
   margin-top: 0.5rem;
   min-height: 20px;
 }
-.judged-status {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  font-style: italic;
-  text-align: right;
+.total-score-large {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #60a5fa;
   margin-left: auto;
+  line-height: 1;
 }
 .score-tooltip {
   display: none;
