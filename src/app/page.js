@@ -16,7 +16,8 @@ export default function Home() {
     lastName: '',
     instrument: 'Clarinet',
     grade: '6',
-    studentPlacement: ''
+    studentPlacement: '',
+    rehearsalSkills: ''
   });
 
   const handleSubmit = async (e) => {
@@ -31,7 +32,7 @@ export default function Home() {
       if (res.ok) {
         alert('Student added successfully!');
         setShowModal(false);
-        setFormData({ firstName: '', lastName: '', instrument: 'Clarinet', grade: '6', studentPlacement: '' });
+        setFormData({ firstName: '', lastName: '', instrument: 'Clarinet', grade: '6', studentPlacement: '', rehearsalSkills: '' });
       } else {
         alert('Failed to add student');
       }
@@ -93,6 +94,13 @@ export default function Home() {
               <div className="form-group">
                 <div className="form-label"><label>Student Placement (Optional)</label></div>
                 <input type="text" value={formData.studentPlacement} onChange={e => setFormData({...formData, studentPlacement: e.target.value})} placeholder="e.g. 1st Chair" />
+              </div>
+              <div className="form-group">
+                <div className="form-label"><label>Rehearsal Skills (Optional)</label></div>
+                <select value={formData.rehearsalSkills} onChange={e => setFormData({...formData, rehearsalSkills: e.target.value})}>
+                  <option value="">-- Select --</option>
+                  {[1, 2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
               </div>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
                 <button type="submit" className="btn" disabled={submitting}>
