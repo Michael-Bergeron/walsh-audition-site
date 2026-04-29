@@ -216,7 +216,7 @@ export default function ResultsPage() {
         <button 
           className="btn btn-secondary" 
           onClick={() => setIsMinimalView(!isMinimalView)}
-          style={{ position: 'absolute', top: 0, right: 0, padding: '0.25rem 0.5rem', fontSize: '0.75rem', margin: 0 }}
+          style={{ position: 'absolute', top: 0, right: 0, padding: '0.25rem 0.5rem', fontSize: '0.75rem', margin: 0, width: 'auto' }}
         >
           {isMinimalView ? 'Detailed View' : 'Minimalistic View'}
         </button>
