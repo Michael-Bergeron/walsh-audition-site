@@ -212,14 +212,7 @@ export default function ResultsPage() {
 
   return (
     <div className="results-page">
-      <div className="results-header" style={{ position: 'relative' }}>
-        <button 
-          className="btn btn-secondary" 
-          onClick={() => setIsMinimalView(!isMinimalView)}
-          style={{ position: 'absolute', top: 0, right: 0, padding: '0.25rem 0.5rem', fontSize: '0.75rem', margin: 0, width: 'auto' }}
-        >
-          {isMinimalView ? 'Detailed View' : 'Minimalistic View'}
-        </button>
+      <div className="results-header">
         <Link href="/" className="back-link">&larr; Back to Home</Link>
         <h1>Audition Results</h1>
         
@@ -281,6 +274,14 @@ export default function ResultsPage() {
               </div>
             )}
           </div>
+          
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => setIsMinimalView(!isMinimalView)}
+            style={{ marginLeft: 'auto', width: 'auto' }}
+          >
+            {isMinimalView ? 'Detailed View' : 'Minimalistic View'}
+          </button>
         </div>
       </div>
 
