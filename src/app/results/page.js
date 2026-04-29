@@ -10,9 +10,17 @@ const instrumentsList = [
   'Trumpet', 'Horn', 'Trombone', 'Euphonium', 'Tuba', 'Percussion'
 ];
 
+const MINIMAL_BANDS = [
+  { name: 'Honor Band', className: 'minimal-bg-honor' },
+  { name: 'Symphonic Band', className: 'minimal-bg-symphonic' },
+  { name: 'Concert Band', className: 'minimal-bg-concert' },
+  { name: 'Intermediate Band', className: 'minimal-bg-intermediate' }
+];
+
 export default function ResultsPage() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMinimalView, setIsMinimalView] = useState(false);
   const [instrumentFilter, setInstrumentFilter] = useState([]); // Empty = All
   const [bandFilter, setBandFilter] = useState([]); // Empty = All
   
@@ -265,11 +273,53 @@ export default function ResultsPage() {
                 ))}
               </div>
             )}
+              </div>
+            )}
           </div>
+          
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => setIsMinimalView(!isMinimalView)}
+            style={{ marginLeft: 'auto', padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+          >
+            {isMinimalView ? 'Detailed View' : 'Minimalistic View'}
+          </button>
         </div>
       </div>
 
-      <div className="columns-container">
+      {isMinimalView ? (
+        <div className="minimal-view-container">
+          {MINIMAL_BANDS.map(band => (
+            <div key={band.name} className="minimal-row">
+              <div className={`minimal-row-title ${band.className}`}>
+                <h2>{band.name}</h2>
+              </div>
+              <div className="minimal-columns-container">
+                {instrumentsList.slice(1).map(instrument => {
+                  const instStudents = (groupedStudents[instrument] || []).filter(s => s.bandPlacement === band.name);
+                  
+                  return (
+                    <div key={instrument} className="minimal-column">
+                      <div className="minimal-column-header">{instrument}</div>
+                      <div className="minimal-students">
+                        {instStudents.map(student => (
+                          <div key={student.id} className="minimal-student-box">
+                            <span className="minimal-name">
+                              {student.firstName} {student.lastName} <span className="minimal-grade">({student.grade})</span>
+                            </span>
+                            <span className="minimal-score">{student.totalScore || 0}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="columns-container">
         {instrumentsList.slice(1).filter(inst => groupedStudents[inst]).map(instrument => (
           <div key={instrument} className="instrument-column">
             <h2 className="column-title">{instrument}</h2>
@@ -344,6 +394,7 @@ export default function ResultsPage() {
           <p className="subtitle">No students found.</p>
         )}
       </div>
+      )}
 
       {selectedStudent && (
         <div className="modal-overlay" onClick={() => handleSelectStudent(null)}>
