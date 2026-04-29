@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import './results.css';
 import { getSchemaForInstrument } from '@/lib/schema';
 
@@ -128,6 +129,43 @@ export default function ResultsPage() {
       });
     } catch (e) {
       console.error('Failed to update band placement', e);
+    }
+  };
+  const handleDragEnd = async (result) => {
+    const { source, destination, draggableId } = result;
+
+    if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+
+    // DroppableId format: "Honor Band|Flute"
+    const [destBand, destInstrument] = destination.droppableId.split('|');
+
+    // Find student
+    const student = students.find(s => s.id === draggableId);
+    if (!student) return;
+
+    if (student.instrument !== destInstrument) return;
+    if (student.bandPlacement === destBand) return;
+
+    const oldBand = student.bandPlacement;
+
+    // Optimistically update
+    setStudents(prev => prev.map(s => 
+      s.id === student.id ? { ...s, bandPlacement: destBand } : s
+    ));
+
+    try {
+      await fetch(`/api/students/${student.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bandPlacement: destBand })
+      });
+    } catch (e) {
+      console.error(e);
+      // Revert optimistic update
+      setStudents(prev => prev.map(s => 
+        s.id === student.id ? { ...s, bandPlacement: oldBand } : s
+      ));
     }
   };
 
@@ -286,36 +324,63 @@ export default function ResultsPage() {
       </div>
 
       {isMinimalView ? (
-        <div className="minimal-view-container">
-          {MINIMAL_BANDS.map(band => (
-            <div key={band.name} className="minimal-row">
-              <div className={`minimal-row-title ${band.className}`}>
-                <h2>{band.name}</h2>
-              </div>
-              <div className="minimal-columns-container">
-                {instrumentsList.slice(1).map(instrument => {
-                  const instStudents = (groupedStudents[instrument] || []).filter(s => s.bandPlacement === band.name);
-                  
-                  return (
-                    <div key={instrument} className="minimal-column">
-                      <div className="minimal-column-header">{instrument}</div>
-                      <div className="minimal-students">
-                        {instStudents.map(student => (
-                          <div key={student.id} className="minimal-student-box">
-                            <span className="minimal-name">
-                              {student.firstName} {student.lastName} <span className="minimal-grade">({student.grade})</span>
-                            </span>
-                            <span className="minimal-score">{student.totalScore || 0}</span>
-                          </div>
-                        ))}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="minimal-view-container">
+            {MINIMAL_BANDS.map(band => (
+              <div key={band.name} className="minimal-row">
+                <div className={`minimal-row-title ${band.className}`}>
+                  <h2>{band.name}</h2>
+                </div>
+                <div className="minimal-columns-container">
+                  {instrumentsList.slice(1).map(instrument => {
+                    const instStudents = (groupedStudents[instrument] || []).filter(s => s.bandPlacement === band.name);
+                    const droppableId = `${band.name}|${instrument}`;
+                    
+                    return (
+                      <div key={instrument} className="minimal-column">
+                        <div className="minimal-column-header">{instrument}</div>
+                        <Droppable droppableId={droppableId} type={instrument}>
+                          {(provided, snapshot) => (
+                            <div 
+                              className={`minimal-students ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
+                              ref={provided.innerRef}
+                              {...provided.droppableProps}
+                              style={{ minHeight: '60px' }}
+                            >
+                              {instStudents.map((student, index) => (
+                                <Draggable key={student.id} draggableId={student.id} index={index}>
+                                  {(provided, snapshot) => (
+                                    <div 
+                                      className={`minimal-student-box ${snapshot.isDragging ? 'dragging' : ''}`}
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      style={{
+                                        ...provided.draggableProps.style,
+                                        opacity: snapshot.isDragging ? 0.8 : 1,
+                                        cursor: 'grab'
+                                      }}
+                                    >
+                                      <span className="minimal-name">
+                                        {student.firstName} {student.lastName} <span className="minimal-grade">({student.grade})</span>
+                                      </span>
+                                      <span className="minimal-score">{student.totalScore || 0}</span>
+                                    </div>
+                                  )}
+                                </Draggable>
+                              ))}
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </DragDropContext>
       ) : (
         <div className="columns-container">
         {instrumentsList.slice(1).filter(inst => groupedStudents[inst]).map(instrument => (
