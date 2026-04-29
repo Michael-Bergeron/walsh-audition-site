@@ -25,6 +25,7 @@ export default function ResultsPage() {
   const handleSelectStudent = (student) => {
     setSelectedStudent(student);
     setIsEditing(false);
+    if (student) {
       setEditForm({
         firstName: student.firstName,
         lastName: student.lastName,
