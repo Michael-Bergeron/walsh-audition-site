@@ -65,9 +65,9 @@
 }
 .columns-container {
   display: flex;
-  overflow-x: auto;
   gap: 2rem;
   padding-bottom: 2rem;
+  min-width: max-content;
 }
 .instrument-column {
   flex: 0 0 300px;
@@ -338,13 +338,13 @@
   flex-direction: column;
   gap: 1.5rem;
   padding-bottom: 2rem;
+  min-width: max-content;
 }
 
 .minimal-row {
   display: flex;
   flex-direction: column;
   border-radius: 8px;
-  overflow: hidden;
   border: 1px solid var(--glass-border);
   background: rgba(15, 23, 42, 0.6);
 }
@@ -368,7 +368,6 @@
 .minimal-columns-container {
   display: flex;
   width: 100%;
-  overflow-x: auto;
 }
 
 .minimal-column {
