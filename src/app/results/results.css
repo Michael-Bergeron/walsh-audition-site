@@ -106,14 +106,12 @@
 }
 
 .integrity-checkbox {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
   width: 16px;
   height: 16px;
   cursor: pointer;
   z-index: 5;
   accent-color: #3b82f6;
+  margin-top: auto;
 }
 
 .card-not-started {
@@ -165,12 +163,19 @@
 .student-score {
   font-size: 1.1rem;
 }
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 0.5rem;
+  min-height: 20px;
+}
 .judged-status {
   font-size: 0.85rem;
   color: var(--text-muted);
-  margin-top: 0.5rem;
   font-style: italic;
   text-align: right;
+  margin-left: auto;
 }
 .score-tooltip {
   display: none;

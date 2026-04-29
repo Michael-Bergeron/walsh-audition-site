@@ -300,22 +300,23 @@ export default function ResultsPage() {
                     Total: <strong>{student.totalScore}</strong>
                   </div>
                   
-                  {student.scoredCount > 0 && (
-                    <div className="judged-status">
-                      {student.scoredCount === student.totalSelections 
-                        ? "Fully judged" 
-                        : `${student.scoredCount} out of ${student.totalSelections} judged`}
-                    </div>
-                  )}
-                  
-                  <input
-                    type="checkbox"
-                    className="integrity-checkbox"
-                    checked={student.auditionIntegrity || false}
-                    onChange={(e) => handleIntegrityToggle(e, student)}
-                    onClick={(e) => e.stopPropagation()}
-                    title="Audition Integrity"
-                  />
+                  <div className="card-footer">
+                    <input
+                      type="checkbox"
+                      className="integrity-checkbox"
+                      checked={student.auditionIntegrity || false}
+                      onChange={(e) => handleIntegrityToggle(e, student)}
+                      onClick={(e) => e.stopPropagation()}
+                      title="Audition Integrity"
+                    />
+                    {student.scoredCount > 0 && (
+                      <div className="judged-status">
+                        {student.scoredCount === student.totalSelections 
+                          ? "Fully judged" 
+                          : `${student.scoredCount} out of ${student.totalSelections} judged`}
+                      </div>
+                    )}
+                  </div>
                   
                   {/* Tooltip on hover */}
                   <div className="score-tooltip">
