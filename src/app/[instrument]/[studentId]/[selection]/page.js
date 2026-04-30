@@ -16,9 +16,6 @@ function SliderGroup({ category, currentScore, decodedSelection, onChange }) {
     <div className="form-group">
       <div className="form-label">
         <label>{category}</label>
-        <span className="score-value">
-          {isTone ? TONE_LABELS[currentScore - 1] : `${currentScore} / 5`}
-        </span>
       </div>
       <div className="slider-container">
         <input 
@@ -168,7 +165,7 @@ export default function JudgingForm({ params }) {
   const displayInstrument = instrument.charAt(0).toUpperCase() + instrument.slice(1);
 
   return (
-    <div style={{ maxWidth: isEtude ? '1100px' : '800px', margin: '0 auto' }}>
+    <div style={{ maxWidth: isEtude ? '1400px' : '800px', margin: '0 auto' }}>
       <Link href={`/${instrument}/${studentId}`} className="back-link">
         &larr; Back to Student #{student.number}
       </Link>
@@ -211,20 +208,22 @@ export default function JudgingForm({ params }) {
         )}
 
         {/* Single comment and submit always at the bottom */}
-        <div className="glass-panel" style={{ marginTop: '1.5rem' }}>
-          <div className="form-group">
-            <div className="form-label"><label>Comments</label></div>
-            <textarea 
-              placeholder="General comments for this evaluation..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows={3}
-            />
+        <div style={{ maxWidth: '500px', margin: '1.5rem auto 0' }}>
+          <div className="glass-panel">
+            <div className="form-group">
+              <div className="form-label"><label>Comments</label></div>
+              <textarea 
+                placeholder="General comments for this evaluation..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                rows={3}
+              />
+            </div>
+            
+            <button type="submit" className="btn" disabled={submitting}>
+              {submitting ? 'Saving...' : 'Submit Evaluation'}
+            </button>
           </div>
-          
-          <button type="submit" className="btn" disabled={submitting}>
-            {submitting ? 'Saving...' : 'Submit Evaluation'}
-          </button>
         </div>
       </form>
     </div>
