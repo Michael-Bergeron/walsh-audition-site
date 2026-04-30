@@ -22,7 +22,7 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     const { id } = params;
-    const { selection, scores, bandPlacement, firstName, lastName, grade, studentPlacement, auditionIntegrity, rehearsalSkills } = await request.json();
+    const { selection, scores, bandPlacement, firstName, lastName, grade, studentPlacement, auditionIntegrity, rehearsalSkills, etudeLevel } = await request.json();
     
     const ref = db.ref(`students/${id}`);
     const snapshot = await ref.once('value');
@@ -39,18 +39,37 @@ export async function PUT(request, { params }) {
     if (studentPlacement !== undefined) student.studentPlacement = studentPlacement || null;
     if (auditionIntegrity !== undefined) student.auditionIntegrity = auditionIntegrity;
     if (rehearsalSkills !== undefined) student.rehearsalSkills = rehearsalSkills ? parseInt(rehearsalSkills) : null;
+    if (etudeLevel !== undefined) student.etudeLevel = parseInt(etudeLevel);
     
     if (selection && scores) {
       if (!student.scores) student.scores = {};
       student.scores[selection] = scores;
+    }
+
+    // Recalculate total score
+    let newTotal = 0;
+    if (student.scores) {
+      // Use etudeLevel (1,2,3) if present, else fallback to mapping from studentPlacement
+      let level = student.etudeLevel;
+      if (level === undefined || level === null) {
+        const placement = parseInt(student.studentPlacement) || 3;
+        if (placement === 1) level = 3;
+        else if (placement === 2) level = 2;
+        else level = 1;
+      }
       
-      let newTotal = 0;
       Object.entries(student.scores).forEach(([selectionName, selectionScores]) => {
         if (!selectionScores) return;
         Object.entries(selectionScores).forEach(([key, subScore]) => {
           if (key === '_comment') return;
+          
           if (typeof subScore === 'object' && subScore !== null && typeof subScore.score === 'undefined') {
             // Nested band column (e.g. Concert/Symphonic/Honor inside Etude)
+            if (selectionName === 'Etude') {
+              if (level === 2 && key === 'Honor') return;
+              if (level === 1 && (key === 'Symphonic' || key === 'Honor')) return;
+            }
+
             Object.entries(subScore).forEach(([cat, catScore]) => {
               if (typeof catScore === 'number') {
                 const weight = SELECTION_WEIGHTS[selectionName]?.[cat] ?? 1;
@@ -64,8 +83,8 @@ export async function PUT(request, { params }) {
           }
         });
       });
-      student.totalScore = newTotal;
     }
+    student.totalScore = newTotal;
     
     await ref.set(student);
     

@@ -188,6 +188,33 @@ export default function ResultsPage() {
     }
   };
 
+  const handleEtudeLevelChange = async (e, student) => {
+    e.stopPropagation();
+    const newLevel = parseInt(e.target.value);
+    
+    // Optimistic update
+    setStudents(prev => prev.map(s => 
+      s.id === student.id ? { ...s, etudeLevel: newLevel } : s
+    ));
+    
+    try {
+      const res = await fetch(`/api/students/${student.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ etudeLevel: newLevel })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        // Update with final totalScore from backend
+        setStudents(prev => prev.map(s => 
+          s.id === student.id ? { ...s, totalScore: updated.totalScore } : s
+        ));
+      }
+    } catch (e) {
+      console.error('Failed to update etude level', e);
+    }
+  };
+
   // totalScore is now pre-calculated by the backend
 
   const getScoredCount = (scores, instrument) => {
@@ -409,7 +436,7 @@ export default function ResultsPage() {
                       </button>
                     </div>
                   <div className="student-score">
-                    {student.grade} | S. placement: <strong>{student.studentPlacement || '-'}</strong>
+                    {student.grade}, S. Placement: <strong>{student.studentPlacement || '-'}</strong>
                     <br/>
                     Rehearsal Skills: <strong>{student.rehearsalSkills || '-'}</strong>
                   </div>
@@ -423,6 +450,26 @@ export default function ResultsPage() {
                       onClick={(e) => e.stopPropagation()}
                       title="Audition Integrity"
                     />
+                    
+                    <div className="placement-slider-container" onClick={e => e.stopPropagation()}>
+                      <input 
+                        type="range" 
+                        min="1" 
+                        max="3" 
+                        step="1"
+                        value={(() => {
+                          if (student.etudeLevel !== undefined && student.etudeLevel !== null) return student.etudeLevel;
+                          const p = parseInt(student.studentPlacement);
+                          if (p === 1) return 3;
+                          if (p === 2) return 2;
+                          return 1;
+                        })()}
+                        onChange={(e) => handleEtudeLevelChange(e, student)}
+                        className="mini-placement-slider"
+                        title="Etude Filter: Left=Concert, Middle=Concert+Symph, Right=All"
+                      />
+                    </div>
+
                     <div className="total-score-large" title="Total Score">
                       {student.totalScore}
                     </div>
