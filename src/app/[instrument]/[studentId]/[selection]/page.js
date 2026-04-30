@@ -130,10 +130,15 @@ export default function JudgingForm({ params }) {
                   step="1"
                   value={currentScore}
                   onChange={(e) => handleScoreChange(category, e.target.value)}
+                  list={`ticks-${category}`}
                 />
-                <div className="slider-ticks">
-                  {[1,2,3,4,5].map(n => <span key={n} />)}
-                </div>
+                <datalist id={`ticks-${category}`}>
+                  <option value="1"></option>
+                  <option value="2"></option>
+                  <option value="3"></option>
+                  <option value="4"></option>
+                  <option value="5"></option>
+                </datalist>
                 <div className="slider-labels">
                   {labels.map(l => <span key={l}>{l}</span>)}
                 </div>

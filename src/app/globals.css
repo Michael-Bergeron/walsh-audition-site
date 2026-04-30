@@ -290,27 +290,6 @@ textarea:focus {
   margin-bottom: 1rem;
 }
 
-.slider-ticks {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  padding: 0 10px; /* match browser thumb inset */
-  margin-top: -4px;
-}
-
-.slider-ticks span {
-  display: flex;
-  justify-content: center;
-}
-
-.slider-ticks span::after {
-  content: '';
-  display: block;
-  width: 2px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 1px;
-}
-
 .slider-labels {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
