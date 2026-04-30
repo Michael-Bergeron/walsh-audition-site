@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSchemaForInstrument } from '@/lib/schema';
 
+const TONE_LABELS = ['Beginner', 'Intermediate', 'Concert', 'Symphonic', 'Honor'];
+
 export default function JudgingForm({ params }) {
   const { instrument, studentId, selection } = params;
   const decodedSelection = decodeURIComponent(selection);
@@ -19,10 +21,11 @@ export default function JudgingForm({ params }) {
   
   const initialScores = {};
   subcategories.forEach(sub => {
-    initialScores[sub] = { score: 4, comment: '' };
+    initialScores[sub] = 3; // default to middle value (3/5)
   });
 
   const [scores, setScores] = useState(initialScores);
+  const [comment, setComment] = useState('');
 
   useEffect(() => {
     async function fetchStudent() {
@@ -34,7 +37,16 @@ export default function JudgingForm({ params }) {
           
           // Pre-fill if already scored
           if (data.scores && data.scores[decodedSelection]) {
-            setScores(data.scores[decodedSelection]);
+            const saved = data.scores[decodedSelection];
+            // Support both old format { score, comment } and new plain number format
+            const rebuilt = {};
+            subcategories.forEach(sub => {
+              const val = saved[sub];
+              rebuilt[sub] = typeof val === 'object' ? val.score : (val ?? 3);
+            });
+            setScores(rebuilt);
+            // Restore the single comment if it was saved
+            setComment(saved._comment || '');
           }
         }
       } catch (e) {
@@ -47,35 +59,27 @@ export default function JudgingForm({ params }) {
   }, [studentId, decodedSelection]);
 
   const handleScoreChange = (category, value) => {
-    setScores(prev => ({
-      ...prev,
-      [category]: { ...prev[category], score: parseInt(value) }
-    }));
-  };
-
-  const handleCommentChange = (category, value) => {
-    setScores(prev => ({
-      ...prev,
-      [category]: { ...prev[category], comment: value }
-    }));
+    setScores(prev => ({ ...prev, [category]: parseInt(value) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     
+    // Flatten scores + attach single comment as _comment
+    const payload = { ...scores, _comment: comment };
+
     try {
       const res = await fetch(`/api/students/${studentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           selection: decodedSelection,
-          scores: scores
+          scores: payload
         })
       });
       
       if (res.ok) {
-        // Navigate back to the student page
         router.push(`/${instrument}/${studentId}`);
         router.refresh();
       } else {
@@ -104,44 +108,55 @@ export default function JudgingForm({ params }) {
       <p className="subtitle">{displayInstrument} - Student #{student.number}</p>
       
       <form onSubmit={handleSubmit} className="glass-panel">
-        {Object.keys(scores).map(category => (
-          <div key={category} className="form-group">
-            <div className="form-label">
-              <label>{category}</label>
-              <span className="score-value">{scores[category].score} / 4</span>
-            </div>
-            
-            <div className="slider-container">
-              <input 
-                type="range" 
-                min="1" 
-                max="4" 
-                step="1"
-                value={scores[category].score}
-                onChange={(e) => handleScoreChange(category, e.target.value)}
-                list={`ticks-${category}`}
-              />
-              <datalist id={`ticks-${category}`}>
-                <option value="1"></option>
-                <option value="2"></option>
-                <option value="3"></option>
-                <option value="4"></option>
-              </datalist>
-              <div className="slider-labels">
-                <span>1</span>
-                <span>2</span>
-                <span>3</span>
-                <span>4</span>
+        {Object.keys(scores).map(category => {
+          const isTone = category === 'Tone';
+          const labels = isTone ? TONE_LABELS : ['1', '2', '3', '4', '5'];
+          const currentScore = scores[category];
+
+          return (
+            <div key={category} className="form-group">
+              <div className="form-label">
+                <label>{category}</label>
+                <span className="score-value">
+                  {isTone ? TONE_LABELS[currentScore - 1] : `${currentScore} / 5`}
+                </span>
+              </div>
+              
+              <div className="slider-container">
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="5" 
+                  step="1"
+                  value={currentScore}
+                  onChange={(e) => handleScoreChange(category, e.target.value)}
+                  list={`ticks-${category}`}
+                />
+                <datalist id={`ticks-${category}`}>
+                  <option value="1"></option>
+                  <option value="2"></option>
+                  <option value="3"></option>
+                  <option value="4"></option>
+                  <option value="5"></option>
+                </datalist>
+                <div className="slider-labels">
+                  {labels.map(l => <span key={l}>{l}</span>)}
+                </div>
               </div>
             </div>
-            
-            <textarea 
-              placeholder={`Comments for ${category}...`}
-              value={scores[category].comment}
-              onChange={(e) => handleCommentChange(category, e.target.value)}
-            />
-          </div>
-        ))}
+          );
+        })}
+
+        {/* Single comment at the bottom */}
+        <div className="form-group" style={{ marginTop: '1.5rem' }}>
+          <div className="form-label"><label>Comments</label></div>
+          <textarea 
+            placeholder="General comments for this evaluation..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows={3}
+          />
+        </div>
         
         <button type="submit" className="btn" disabled={submitting}>
           {submitting ? 'Saving...' : 'Submit Evaluation'}

@@ -46,9 +46,12 @@ export async function PUT(request, { params }) {
       let newTotal = 0;
       Object.values(student.scores).forEach(selectionScores => {
         if (selectionScores) {
-          Object.values(selectionScores).forEach(subScore => {
-            if (subScore && subScore.score) {
-              newTotal += subScore.score;
+          Object.entries(selectionScores).forEach(([key, subScore]) => {
+            if (key === '_comment') return; // skip the comment field
+            if (typeof subScore === 'number') {
+              newTotal += subScore;
+            } else if (subScore && subScore.score) {
+              newTotal += subScore.score; // backwards compat with old format
             }
           });
         }
