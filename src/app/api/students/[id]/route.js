@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
+import { SELECTION_WEIGHTS } from '@/lib/schema';
 
 export async function GET(request, { params }) {
   try {
@@ -44,15 +45,13 @@ export async function PUT(request, { params }) {
       student.scores[selection] = scores;
       
       let newTotal = 0;
-      Object.values(student.scores).forEach(selectionScores => {
+      Object.entries(student.scores).forEach(([selectionName, selectionScores]) => {
         if (selectionScores) {
           Object.entries(selectionScores).forEach(([key, subScore]) => {
             if (key === '_comment') return; // skip the comment field
-            if (typeof subScore === 'number') {
-              newTotal += subScore;
-            } else if (subScore && subScore.score) {
-              newTotal += subScore.score; // backwards compat with old format
-            }
+            const score = typeof subScore === 'number' ? subScore : (subScore?.score ?? 0);
+            const weight = SELECTION_WEIGHTS[selectionName]?.[key] ?? 1;
+            newTotal += score * weight;
           });
         }
       });

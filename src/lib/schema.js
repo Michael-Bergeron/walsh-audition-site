@@ -4,21 +4,28 @@ export const PERCUSSION = ['Percussion'];
 
 export const INSTRUMENT_SCHEMA = {
   WOODWINDS: {
-    'Etude': ['Tone', 'Articulation', 'Dynamics', 'Technique', 'Rhythm'],
+    'Etude': ['Tone', 'Articulation', 'Dynamics', 'Technique'],
     'Major Scale': ['Tone', 'Articulation', 'Technique'],
     'Chromatic Scale': ['Tone', 'Technique'],
     'Woodwind Workout': ['Tone', 'Articulation', 'Technique', 'Rhythm']
   },
   BRASS: {
-    'Etude': ['Tone', 'Articulation', 'Dynamics', 'Technique', 'Rhythm'],
+    'Etude': ['Tone', 'Articulation', 'Dynamics', 'Technique'],
     'Major Scale': ['Tone', 'Articulation', 'Technique'],
     'Chromatic Scale': ['Tone', 'Technique'],
     'Remmington': ['Tone', 'Articulation', 'Technique', 'Rhythm']
   },
   PERCUSSION: {
-    'Etude': ['Tone', 'Dynamics', 'Technique', 'Rhythm'],
+    'Etude': ['Tone', 'Dynamics', 'Technique'],
     'F scale sequence': ['Tone', 'Technique'],
     'A scale sequence': ['Tone', 'Technique']
+  }
+};
+
+// Subcategory score multipliers per selection
+export const SELECTION_WEIGHTS = {
+  'Etude': {
+    'Tone': 3
   }
 };
 

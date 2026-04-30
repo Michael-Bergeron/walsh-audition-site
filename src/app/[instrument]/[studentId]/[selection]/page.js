@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getSchemaForInstrument } from '@/lib/schema';
+import { getSchemaForInstrument, SELECTION_WEIGHTS } from '@/lib/schema';
 
 const TONE_LABELS = ['Beginner', 'Intermediate', 'Concert', 'Symphonic', 'Honor'];
 
@@ -112,13 +112,18 @@ export default function JudgingForm({ params }) {
           const isTone = category === 'Tone';
           const labels = isTone ? TONE_LABELS : ['1', '2', '3', '4', '5'];
           const currentScore = scores[category];
+          const weight = SELECTION_WEIGHTS[decodedSelection]?.[category] ?? 1;
 
           return (
             <div key={category} className="form-group">
               <div className="form-label">
-                <label>{category}</label>
+                <label>
+                  {category}
+                  {weight > 1 && <span style={{ marginLeft: '0.4rem', fontSize: '0.75rem', color: '#f59e0b', fontWeight: 700 }}>×{weight}</span>}
+                </label>
                 <span className="score-value">
                   {isTone ? TONE_LABELS[currentScore - 1] : `${currentScore} / 5`}
+                  {weight > 1 && <span style={{ marginLeft: '0.3rem', fontSize: '0.8rem', color: '#f59e0b' }}>(={currentScore * weight})</span>}
                 </span>
               </div>
               
