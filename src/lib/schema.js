@@ -13,7 +13,7 @@ export const INSTRUMENT_SCHEMA = {
     'Etude': ['Tone', 'Articulation', 'Dynamics', 'Technique'],
     'Major Scale': ['Tone', 'Articulation', 'Technique'],
     'Chromatic Scale': ['Tone', 'Technique'],
-    'Remmington': ['Tone', 'Articulation', 'Technique', 'Rhythm']
+    'Remington': ['Tone', 'Articulation', 'Technique', 'Rhythm']
   },
   PERCUSSION: {
     'Etude': ['Tone', 'Dynamics', 'Technique'],

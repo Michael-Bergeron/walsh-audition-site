@@ -46,14 +46,23 @@ export async function PUT(request, { params }) {
       
       let newTotal = 0;
       Object.entries(student.scores).forEach(([selectionName, selectionScores]) => {
-        if (selectionScores) {
-          Object.entries(selectionScores).forEach(([key, subScore]) => {
-            if (key === '_comment') return; // skip the comment field
+        if (!selectionScores) return;
+        Object.entries(selectionScores).forEach(([key, subScore]) => {
+          if (key === '_comment') return;
+          if (typeof subScore === 'object' && subScore !== null && typeof subScore.score === 'undefined') {
+            // Nested band column (e.g. Concert/Symphonic/Honor inside Etude)
+            Object.entries(subScore).forEach(([cat, catScore]) => {
+              if (typeof catScore === 'number') {
+                const weight = SELECTION_WEIGHTS[selectionName]?.[cat] ?? 1;
+                newTotal += catScore * weight;
+              }
+            });
+          } else {
             const score = typeof subScore === 'number' ? subScore : (subScore?.score ?? 0);
             const weight = SELECTION_WEIGHTS[selectionName]?.[key] ?? 1;
             newTotal += score * weight;
-          });
-        }
+          }
+        });
       });
       student.totalScore = newTotal;
     }

@@ -6,6 +6,44 @@ import { useRouter } from 'next/navigation';
 import { getSchemaForInstrument, SELECTION_WEIGHTS } from '@/lib/schema';
 
 const TONE_LABELS = ['Beginner', 'Intermediate', 'Concert', 'Symphonic', 'Honor'];
+const ETUDE_BANDS = ['Concert', 'Symphonic', 'Honor'];
+
+function SliderGroup({ category, currentScore, decodedSelection, onChange }) {
+  const isTone = category === 'Tone';
+  const labels = isTone ? TONE_LABELS : ['1', '2', '3', '4', '5'];
+
+  return (
+    <div className="form-group">
+      <div className="form-label">
+        <label>{category}</label>
+        <span className="score-value">
+          {isTone ? TONE_LABELS[currentScore - 1] : `${currentScore} / 5`}
+        </span>
+      </div>
+      <div className="slider-container">
+        <input 
+          type="range" 
+          min="1" 
+          max="5" 
+          step="1"
+          value={currentScore}
+          onChange={(e) => onChange(parseInt(e.target.value))}
+          list={`ticks-${category}-${decodedSelection}`}
+        />
+        <datalist id={`ticks-${category}-${decodedSelection}`}>
+          <option value="1"></option>
+          <option value="2"></option>
+          <option value="3"></option>
+          <option value="4"></option>
+          <option value="5"></option>
+        </datalist>
+        <div className="slider-labels">
+          {labels.map(l => <span key={l}>{l}</span>)}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function JudgingForm({ params }) {
   const { instrument, studentId, selection } = params;
@@ -18,13 +56,26 @@ export default function JudgingForm({ params }) {
   
   const schema = getSchemaForInstrument(instrument);
   const subcategories = schema[decodedSelection] || [];
-  
-  const initialScores = {};
-  subcategories.forEach(sub => {
-    initialScores[sub] = 3; // default to middle value (3/5)
-  });
+  const isEtude = decodedSelection === 'Etude';
 
-  const [scores, setScores] = useState(initialScores);
+  // For Etude: { Concert: {Tone:3,...}, Symphonic: {...}, Honor: {...} }
+  // For others: { Tone: 3, Articulation: 3, ... }
+  const buildInitial = () => {
+    if (isEtude) {
+      const bands = {};
+      ETUDE_BANDS.forEach(band => {
+        const s = {};
+        subcategories.forEach(sub => { s[sub] = 3; });
+        bands[band] = s;
+      });
+      return bands;
+    }
+    const s = {};
+    subcategories.forEach(sub => { s[sub] = 3; });
+    return s;
+  };
+
+  const [scores, setScores] = useState(buildInitial);
   const [comment, setComment] = useState('');
 
   useEffect(() => {
@@ -35,18 +86,30 @@ export default function JudgingForm({ params }) {
           const data = await res.json();
           setStudent(data);
           
-          // Pre-fill if already scored
           if (data.scores && data.scores[decodedSelection]) {
             const saved = data.scores[decodedSelection];
-            // Support both old format { score, comment } and new plain number format
-            const rebuilt = {};
-            subcategories.forEach(sub => {
-              const val = saved[sub];
-              rebuilt[sub] = typeof val === 'object' ? val.score : (val ?? 3);
-            });
-            setScores(rebuilt);
-            // Restore the single comment if it was saved
             setComment(saved._comment || '');
+
+            if (isEtude) {
+              // Restore nested band scores
+              const rebuilt = buildInitial();
+              ETUDE_BANDS.forEach(band => {
+                if (saved[band]) {
+                  subcategories.forEach(sub => {
+                    const val = saved[band][sub];
+                    rebuilt[band][sub] = typeof val === 'number' ? val : (val?.score ?? 3);
+                  });
+                }
+              });
+              setScores(rebuilt);
+            } else {
+              const rebuilt = {};
+              subcategories.forEach(sub => {
+                const val = saved[sub];
+                rebuilt[sub] = typeof val === 'object' ? (val?.score ?? 3) : (val ?? 3);
+              });
+              setScores(rebuilt);
+            }
           }
         }
       } catch (e) {
@@ -58,25 +121,31 @@ export default function JudgingForm({ params }) {
     fetchStudent();
   }, [studentId, decodedSelection]);
 
-  const handleScoreChange = (category, value) => {
-    setScores(prev => ({ ...prev, [category]: parseInt(value) }));
+  const handleScoreChange = (bandOrCategory, categoryOrValue, value) => {
+    if (isEtude) {
+      // bandOrCategory = band name, categoryOrValue = category, value = number
+      setScores(prev => ({
+        ...prev,
+        [bandOrCategory]: { ...prev[bandOrCategory], [categoryOrValue]: value }
+      }));
+    } else {
+      setScores(prev => ({ ...prev, [bandOrCategory]: categoryOrValue }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     
-    // Flatten scores + attach single comment as _comment
-    const payload = { ...scores, _comment: comment };
+    const payload = isEtude
+      ? { ...scores, _comment: comment }
+      : { ...scores, _comment: comment };
 
     try {
       const res = await fetch(`/api/students/${studentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          selection: decodedSelection,
-          scores: payload
-        })
+        body: JSON.stringify({ selection: decodedSelection, scores: payload })
       });
       
       if (res.ok) {
@@ -99,7 +168,7 @@ export default function JudgingForm({ params }) {
   const displayInstrument = instrument.charAt(0).toUpperCase() + instrument.slice(1);
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ maxWidth: isEtude ? '1100px' : '800px', margin: '0 auto' }}>
       <Link href={`/${instrument}/${studentId}`} className="back-link">
         &larr; Back to Student #{student.number}
       </Link>
@@ -107,61 +176,56 @@ export default function JudgingForm({ params }) {
       <h1>Evaluate {decodedSelection}</h1>
       <p className="subtitle">{displayInstrument} - Student #{student.number}</p>
       
-      <form onSubmit={handleSubmit} className="glass-panel">
-        {Object.keys(scores).map(category => {
-          const isTone = category === 'Tone';
-          const labels = isTone ? TONE_LABELS : ['1', '2', '3', '4', '5'];
-          const currentScore = scores[category];
-          const weight = SELECTION_WEIGHTS[decodedSelection]?.[category] ?? 1;
-
-          return (
-            <div key={category} className="form-group">
-              <div className="form-label">
-                <label>{category}</label>
-                <span className="score-value">
-                  {isTone ? TONE_LABELS[currentScore - 1] : `${currentScore} / 5`}
-                </span>
+      <form onSubmit={handleSubmit}>
+        {isEtude ? (
+          // 3-column Etude layout
+          <div className="etude-columns">
+            {ETUDE_BANDS.map(band => (
+              <div key={band} className="etude-column glass-panel">
+                <h3 className="etude-band-heading">{band}</h3>
+                {subcategories.map(category => (
+                  <SliderGroup
+                    key={category}
+                    category={category}
+                    currentScore={scores[band]?.[category] ?? 3}
+                    decodedSelection={`${decodedSelection}-${band}`}
+                    onChange={(val) => handleScoreChange(band, category, val)}
+                  />
+                ))}
               </div>
-              
-              <div className="slider-container">
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="5" 
-                  step="1"
-                  value={currentScore}
-                  onChange={(e) => handleScoreChange(category, e.target.value)}
-                  list={`ticks-${category}`}
-                />
-                <datalist id={`ticks-${category}`}>
-                  <option value="1"></option>
-                  <option value="2"></option>
-                  <option value="3"></option>
-                  <option value="4"></option>
-                  <option value="5"></option>
-                </datalist>
-                <div className="slider-labels">
-                  {labels.map(l => <span key={l}>{l}</span>)}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+            ))}
+          </div>
+        ) : (
+          // Standard single-column layout
+          <div className="glass-panel">
+            {subcategories.map(category => (
+              <SliderGroup
+                key={category}
+                category={category}
+                currentScore={scores[category] ?? 3}
+                decodedSelection={decodedSelection}
+                onChange={(val) => handleScoreChange(category, val)}
+              />
+            ))}
+          </div>
+        )}
 
-        {/* Single comment at the bottom */}
-        <div className="form-group" style={{ marginTop: '1.5rem' }}>
-          <div className="form-label"><label>Comments</label></div>
-          <textarea 
-            placeholder="General comments for this evaluation..."
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            rows={3}
-          />
+        {/* Single comment and submit always at the bottom */}
+        <div className="glass-panel" style={{ marginTop: '1.5rem' }}>
+          <div className="form-group">
+            <div className="form-label"><label>Comments</label></div>
+            <textarea 
+              placeholder="General comments for this evaluation..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={3}
+            />
+          </div>
+          
+          <button type="submit" className="btn" disabled={submitting}>
+            {submitting ? 'Saving...' : 'Submit Evaluation'}
+          </button>
         </div>
-        
-        <button type="submit" className="btn" disabled={submitting}>
-          {submitting ? 'Saving...' : 'Submit Evaluation'}
-        </button>
       </form>
     </div>
   );

@@ -15,7 +15,7 @@ const INSTRUMENT_SCHEMA = {
     'Etude': ['Tone', 'Articulation', 'Dynamics', 'Technique', 'Rhythm'],
     'Major Scale': ['Tone', 'Articulation', 'Technique'],
     'Chromatic Scale': ['Tone', 'Technique'],
-    'Remmington': ['Tone', 'Articulation', 'Technique', 'Rhythm']
+    'Remington': ['Tone', 'Articulation', 'Technique', 'Rhythm']
   },
   PERCUSSION: {
     'Etude': ['Tone', 'Articulation', 'Dynamics', 'Technique', 'Rhythm'],
@@ -32,7 +32,7 @@ const getInstrumentFamily = (instrument) => {
 };
 
 const instruments = [
-  'Clarinet', 'Saxophone', 'Flute', 'Oboe', 'Bassoon', 
+  'Clarinet', 'Saxophone', 'Flute', 'Oboe', 'Bassoon',
   'Trumpet', 'Trombone', 'Horn', 'Euphonium', 'Tuba', 'Percussion'
 ];
 

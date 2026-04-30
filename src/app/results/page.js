@@ -435,14 +435,36 @@ export default function ResultsPage() {
                       const selScores = student.scores?.[sel];
                       if (!selScores) return <div key={sel} className="breakdown-section"><strong>{sel}:</strong> Pending</div>;
                       
+                      // Detect nested Etude structure (band columns)
+                      const cats = getSchemaForInstrument(student.instrument)[sel];
+                      const firstKey = Object.keys(selScores).find(k => k !== '_comment');
+                      const isNested = firstKey && typeof selScores[firstKey] === 'object' && selScores[firstKey] !== null;
+
                       return (
                         <div key={sel} className="breakdown-section">
                           <strong>{sel}</strong>
-                          <ul>
-                            {getSchemaForInstrument(student.instrument)[sel].map(cat => (
-                              <li key={cat}>{cat}: {selScores[cat]?.score || 0} <em>({selScores[cat]?.comment || 'none'})</em></li>
-                            ))}
-                          </ul>
+                          {isNested ? (
+                            Object.entries(selScores).filter(([k]) => k !== '_comment').map(([band, bandScores]) => (
+                              <div key={band}>
+                                <em style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{band}</em>
+                                <ul>
+                                  {cats.map(cat => {
+                                    const score = typeof bandScores[cat] === 'number' ? bandScores[cat] : 0;
+                                    return <li key={cat}>{cat}: {score}</li>;
+                                  })}
+                                </ul>
+                              </div>
+                            ))
+                          ) : (
+                            <ul>
+                              {cats.map(cat => {
+                                const val = selScores[cat];
+                                const score = typeof val === 'number' ? val : (val?.score ?? 0);
+                                return <li key={cat}>{cat}: {score}</li>;
+                              })}
+                            </ul>
+                          )}
+                          {selScores._comment && <p className="comment-text">"{selScores._comment}"</p>}
                         </div>
                       );
                     })}

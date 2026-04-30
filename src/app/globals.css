@@ -287,6 +287,27 @@ textarea:focus {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
+.etude-columns {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.etude-column {
+  flex: 1;
+  min-width: 0;
+}
+
+.etude-band-heading {
+  text-align: center;
+  margin: 0 0 1.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #60a5fa;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0.75rem;
+}
+
 .slider-container {
   display: flex;
   flex-direction: column;
