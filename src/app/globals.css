@@ -175,11 +175,13 @@ input[type=range]::-webkit-slider-runnable-track {
   cursor: pointer;
   background: linear-gradient(to right,
     rgba(255,255,255,0.7) 0px, rgba(255,255,255,0.7) 2px,
-    rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) calc(33.33% - 1px),
-    rgba(255,255,255,0.7) calc(33.33% - 1px), rgba(255,255,255,0.7) calc(33.33% + 1px),
-    rgba(255,255,255,0.1) calc(33.33% + 1px), rgba(255,255,255,0.1) calc(66.66% - 1px),
-    rgba(255,255,255,0.7) calc(66.66% - 1px), rgba(255,255,255,0.7) calc(66.66% + 1px),
-    rgba(255,255,255,0.1) calc(66.66% + 1px), rgba(255,255,255,0.1) calc(100% - 2px),
+    rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) calc(25% - 1px),
+    rgba(255,255,255,0.7) calc(25% - 1px), rgba(255,255,255,0.7) calc(25% + 1px),
+    rgba(255,255,255,0.1) calc(25% + 1px), rgba(255,255,255,0.1) calc(50% - 1px),
+    rgba(255,255,255,0.7) calc(50% - 1px), rgba(255,255,255,0.7) calc(50% + 1px),
+    rgba(255,255,255,0.1) calc(50% + 1px), rgba(255,255,255,0.1) calc(75% - 1px),
+    rgba(255,255,255,0.7) calc(75% - 1px), rgba(255,255,255,0.7) calc(75% + 1px),
+    rgba(255,255,255,0.1) calc(75% + 1px), rgba(255,255,255,0.1) calc(100% - 2px),
     rgba(255,255,255,0.7) calc(100% - 2px), rgba(255,255,255,0.7) 100%
   );
   border-radius: 3px;
@@ -191,11 +193,13 @@ input[type=range]::-moz-range-track {
   cursor: pointer;
   background: linear-gradient(to right,
     rgba(255,255,255,0.7) 0px, rgba(255,255,255,0.7) 2px,
-    rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) calc(33.33% - 1px),
-    rgba(255,255,255,0.7) calc(33.33% - 1px), rgba(255,255,255,0.7) calc(33.33% + 1px),
-    rgba(255,255,255,0.1) calc(33.33% + 1px), rgba(255,255,255,0.1) calc(66.66% - 1px),
-    rgba(255,255,255,0.7) calc(66.66% - 1px), rgba(255,255,255,0.7) calc(66.66% + 1px),
-    rgba(255,255,255,0.1) calc(66.66% + 1px), rgba(255,255,255,0.1) calc(100% - 2px),
+    rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) calc(25% - 1px),
+    rgba(255,255,255,0.7) calc(25% - 1px), rgba(255,255,255,0.7) calc(25% + 1px),
+    rgba(255,255,255,0.1) calc(25% + 1px), rgba(255,255,255,0.1) calc(50% - 1px),
+    rgba(255,255,255,0.7) calc(50% - 1px), rgba(255,255,255,0.7) calc(50% + 1px),
+    rgba(255,255,255,0.1) calc(50% + 1px), rgba(255,255,255,0.1) calc(75% - 1px),
+    rgba(255,255,255,0.7) calc(75% - 1px), rgba(255,255,255,0.7) calc(75% + 1px),
+    rgba(255,255,255,0.1) calc(75% + 1px), rgba(255,255,255,0.1) calc(100% - 2px),
     rgba(255,255,255,0.7) calc(100% - 2px), rgba(255,255,255,0.7) 100%
   );
   border-radius: 3px;
