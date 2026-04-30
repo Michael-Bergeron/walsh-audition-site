@@ -60,6 +60,16 @@ export async function PUT(request, { params }) {
       
       Object.entries(student.scores).forEach(([selectionName, selectionScores]) => {
         if (!selectionScores) return;
+
+        // Filter entire selections based on etude level
+        if (level === 1) {
+          // Level C: ONLY count the first part of the Etude. Nothing else.
+          if (selectionName !== 'Etude') return;
+        } else if (level === 2) {
+          // Level S: ONLY count first 2 Etude parts, Chromatic, and Major.
+          if (selectionName !== 'Etude' && selectionName !== 'Major Scale' && selectionName !== 'Chromatic Scale') return;
+        }
+
         Object.entries(selectionScores).forEach(([key, subScore]) => {
           if (key === '_comment') return;
           

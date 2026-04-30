@@ -7,7 +7,7 @@ import './results.css';
 import { getSchemaForInstrument } from '@/lib/schema';
 
 const instrumentsList = [
-  'All', 'Flute', 'Oboe', 'Bassoon', 'Clarinet', 'Saxophone', 
+  'All', 'Flute', 'Oboe', 'Bassoon', 'Clarinet', 'Saxophone',
   'Trumpet', 'Horn', 'Trombone', 'Euphonium', 'Tuba', 'Percussion'
 ];
 
@@ -24,7 +24,7 @@ export default function ResultsPage() {
   const [isMinimalView, setIsMinimalView] = useState(false);
   const [instrumentFilter, setInstrumentFilter] = useState([]); // Empty = All
   const [bandFilter, setBandFilter] = useState([]); // Empty = All
-  
+
   const [instOpen, setInstOpen] = useState(false);
   const [bandOpen, setBandOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -97,13 +97,13 @@ export default function ResultsPage() {
         setLoading(false);
       }
     }
-    
+
     // Fetch immediately on load
     fetchStudents();
-    
+
     // Poll for updates every 5 seconds
     const intervalId = setInterval(fetchStudents, 5000);
-    
+
     // Cleanup interval on unmount
     return () => clearInterval(intervalId);
   }, []);
@@ -114,12 +114,12 @@ export default function ResultsPage() {
     const currentIndex = BANDS.indexOf(student.bandPlacement || null);
     const nextIndex = (currentIndex + 1) % BANDS.length;
     const newBand = BANDS[nextIndex];
-    
+
     // Optimistic UI update
-    setStudents(prev => prev.map(s => 
+    setStudents(prev => prev.map(s =>
       s.id === student.id ? { ...s, bandPlacement: newBand } : s
     ));
-    
+
     // Sync with backend
     try {
       await fetch(`/api/students/${student.id}`, {
@@ -150,7 +150,7 @@ export default function ResultsPage() {
     const oldBand = student.bandPlacement;
 
     // Optimistically update
-    setStudents(prev => prev.map(s => 
+    setStudents(prev => prev.map(s =>
       s.id === student.id ? { ...s, bandPlacement: destBand } : s
     ));
 
@@ -163,7 +163,7 @@ export default function ResultsPage() {
     } catch (e) {
       console.error(e);
       // Revert optimistic update
-      setStudents(prev => prev.map(s => 
+      setStudents(prev => prev.map(s =>
         s.id === student.id ? { ...s, bandPlacement: oldBand } : s
       ));
     }
@@ -172,11 +172,11 @@ export default function ResultsPage() {
   const handleIntegrityToggle = async (e, student) => {
     e.stopPropagation();
     const newValue = !student.auditionIntegrity;
-    
-    setStudents(prev => prev.map(s => 
+
+    setStudents(prev => prev.map(s =>
       s.id === student.id ? { ...s, auditionIntegrity: newValue } : s
     ));
-    
+
     try {
       await fetch(`/api/students/${student.id}`, {
         method: 'PUT',
@@ -191,12 +191,12 @@ export default function ResultsPage() {
   const handleEtudeLevelChange = async (e, student) => {
     e.stopPropagation();
     const newLevel = parseInt(e.target.value);
-    
+
     // Optimistic update
-    setStudents(prev => prev.map(s => 
+    setStudents(prev => prev.map(s =>
       s.id === student.id ? { ...s, etudeLevel: newLevel } : s
     ));
-    
+
     try {
       const res = await fetch(`/api/students/${student.id}`, {
         method: 'PUT',
@@ -206,7 +206,7 @@ export default function ResultsPage() {
       if (res.ok) {
         const updated = await res.json();
         // Update with final totalScore from backend
-        setStudents(prev => prev.map(s => 
+        setStudents(prev => prev.map(s =>
           s.id === student.id ? { ...s, totalScore: updated.totalScore } : s
         ));
       }
@@ -225,19 +225,19 @@ export default function ResultsPage() {
 
   // Group and sort students
   const groupedStudents = {};
-  
+
   students.forEach(student => {
     if (instrumentFilter.length > 0 && !instrumentFilter.includes(student.instrument)) return;
-    
+
     if (bandFilter.length > 0) {
       const b = student.bandPlacement || 'Unplaced';
       if (!bandFilter.includes(b)) return;
     }
-    
+
     if (!groupedStudents[student.instrument]) {
       groupedStudents[student.instrument] = [];
     }
-    
+
     const schema = getSchemaForInstrument(student.instrument);
     const totalSelections = Object.keys(schema).length;
     const scoredCount = getScoredCount(student.scores, student.instrument);
@@ -246,7 +246,7 @@ export default function ResultsPage() {
     else if (scoredCount > 0) status = 'pending';
 
     const totalScore = student.totalScore || 0;
-    
+
     groupedStudents[student.instrument].push({
       ...student,
       totalScore,
@@ -280,7 +280,7 @@ export default function ResultsPage() {
       <div className="results-header">
         <Link href="/" className="back-link">&larr; Back to Home</Link>
         <h1>Audition Results</h1>
-        
+
         <div className="filter-bar">
           <div className="custom-dropdown">
             <button className="dropdown-button" onClick={() => setInstOpen(!instOpen)}>
@@ -289,21 +289,21 @@ export default function ResultsPage() {
             {instOpen && (
               <div className="dropdown-menu">
                 <label>
-                  <input 
-                    type="checkbox" 
-                    checked={instrumentFilter.length === 0} 
-                    onChange={() => setInstrumentFilter([])} 
+                  <input
+                    type="checkbox"
+                    checked={instrumentFilter.length === 0}
+                    onChange={() => setInstrumentFilter([])}
                   /> All Instruments
                 </label>
                 {instrumentsList.slice(1).map(inst => (
                   <label key={inst}>
-                    <input 
-                      type="checkbox" 
-                      checked={instrumentFilter.includes(inst)} 
+                    <input
+                      type="checkbox"
+                      checked={instrumentFilter.includes(inst)}
                       onChange={(e) => {
                         if (e.target.checked) setInstrumentFilter([...instrumentFilter, inst]);
                         else setInstrumentFilter(instrumentFilter.filter(i => i !== inst));
-                      }} 
+                      }}
                     /> {inst}
                   </label>
                 ))}
@@ -318,30 +318,30 @@ export default function ResultsPage() {
             {bandOpen && (
               <div className="dropdown-menu">
                 <label>
-                  <input 
-                    type="checkbox" 
-                    checked={bandFilter.length === 0} 
-                    onChange={() => setBandFilter([])} 
+                  <input
+                    type="checkbox"
+                    checked={bandFilter.length === 0}
+                    onChange={() => setBandFilter([])}
                   /> All Bands
                 </label>
                 {[...BANDS.slice(1), 'Unplaced'].map(band => (
                   <label key={band}>
-                    <input 
-                      type="checkbox" 
-                      checked={bandFilter.includes(band)} 
+                    <input
+                      type="checkbox"
+                      checked={bandFilter.includes(band)}
                       onChange={(e) => {
                         if (e.target.checked) setBandFilter([...bandFilter, band]);
                         else setBandFilter(bandFilter.filter(b => b !== band));
-                      }} 
+                      }}
                     /> {band}
                   </label>
                 ))}
               </div>
             )}
           </div>
-          
-          <button 
-            className="btn btn-secondary" 
+
+          <button
+            className="btn btn-secondary"
             onClick={() => setIsMinimalView(!isMinimalView)}
             style={{ marginLeft: 'auto', width: 'auto' }}
           >
@@ -362,13 +362,13 @@ export default function ResultsPage() {
                   {instrumentsList.slice(1).map(instrument => {
                     const instStudents = (groupedStudents[instrument] || []).filter(s => s.bandPlacement === band.name);
                     const droppableId = `${band.name}|${instrument}`;
-                    
+
                     return (
                       <div key={instrument} className="minimal-column">
                         <div className="minimal-column-header">{instrument}</div>
                         <Droppable droppableId={droppableId} type={instrument}>
                           {(provided, snapshot) => (
-                            <div 
+                            <div
                               className={`minimal-students ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
                               ref={provided.innerRef}
                               {...provided.droppableProps}
@@ -377,7 +377,7 @@ export default function ResultsPage() {
                               {instStudents.map((student, index) => (
                                 <Draggable key={student.id} draggableId={student.id} index={index}>
                                   {(provided, snapshot) => (
-                                    <div 
+                                    <div
                                       className={`minimal-student-box ${snapshot.isDragging ? 'dragging' : ''}`}
                                       ref={provided.innerRef}
                                       {...provided.draggableProps}
@@ -410,122 +410,140 @@ export default function ResultsPage() {
         </DragDropContext>
       ) : (
         <div className="columns-container">
-        {instrumentsList.slice(1).filter(inst => groupedStudents[inst]).map(instrument => (
-          <div key={instrument} className="instrument-column">
-            <h2 className="column-title">{instrument}</h2>
-            <div className="students-list">
-              {groupedStudents[instrument].map(student => {
-                const bandClass = student.bandPlacement ? `band-${student.bandPlacement.split(' ')[0].toLowerCase()}` : '';
-                return (
-                  <div 
-                    key={student.id} 
-                    className={`student-result-card card-${student.status} ${bandClass}`}
-                    onClick={() => handleCardClick(student)}
-                  >
-                    <div className="student-result-header">
-                      <div>
-                        <span className="student-number">#{student.number}</span>
-                        <span className="student-name">{student.firstName} {student.lastName}</span>
+          {instrumentsList.slice(1).filter(inst => groupedStudents[inst]).map(instrument => (
+            <div key={instrument} className="instrument-column">
+              <h2 className="column-title">{instrument}</h2>
+              <div className="students-list">
+                {groupedStudents[instrument].map(student => {
+                  const bandClass = student.bandPlacement ? `band-${student.bandPlacement.split(' ')[0].toLowerCase()}` : '';
+                  return (
+                    <div
+                      key={student.id}
+                      className={`student-result-card card-${student.status} ${bandClass}`}
+                      onClick={() => handleCardClick(student)}
+                    >
+                      <div className="student-result-header">
+                        <div>
+                          <span className="student-number">#{student.number}</span>
+                          <span className="student-name">{student.firstName} {student.lastName}</span>
+                        </div>
+                        <button
+                          className="settings-btn"
+                          onClick={(e) => { e.stopPropagation(); handleSelectStudent(student); }}
+                          title="Settings"
+                        >
+                          ⚙️
+                        </button>
                       </div>
-                      <button 
-                        className="settings-btn" 
-                        onClick={(e) => { e.stopPropagation(); handleSelectStudent(student); }}
-                        title="Settings"
-                      >
-                        ⚙️
-                      </button>
-                    </div>
-                  <div className="student-score">
-                    {student.grade}, S. Placement: <strong>{student.studentPlacement || '-'}</strong>
-                    <br/>
-                    Rehearsal Skills: <strong>{student.rehearsalSkills || '-'}</strong>
-                  </div>
-                  
-                  <div className="card-footer">
-                    <input
-                      type="checkbox"
-                      className="integrity-checkbox"
-                      checked={student.auditionIntegrity || false}
-                      onChange={(e) => handleIntegrityToggle(e, student)}
-                      onClick={(e) => e.stopPropagation()}
-                      title="Audition Integrity"
-                    />
-                    
-                    <div className="placement-slider-container" onClick={e => e.stopPropagation()}>
-                      <input 
-                        type="range" 
-                        min="1" 
-                        max="3" 
-                        step="1"
-                        value={(() => {
-                          if (student.etudeLevel !== undefined && student.etudeLevel !== null) return student.etudeLevel;
-                          const p = parseInt(student.studentPlacement);
-                          if (p === 1) return 3;
-                          if (p === 2) return 2;
-                          return 1;
-                        })()}
-                        onChange={(e) => handleEtudeLevelChange(e, student)}
-                        className="mini-placement-slider"
-                        title="Etude Filter: Left=Concert, Middle=Concert+Symph, Right=All"
-                      />
-                    </div>
+                      <div className="student-score">
+                        {student.grade}, Expected: <strong>{(() => {
+                          const mapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
+                          return mapping[student.studentPlacement] || student.studentPlacement || '-';
+                        })()}</strong>
+                        <br />
+                        Rehearsal Skills: <strong>{(() => {
+                          const mapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
+                          return mapping[student.rehearsalSkills] || student.rehearsalSkills || '-';
+                        })()}</strong>
+                      </div>
 
-                    <div className="total-score-large" title="Total Score">
-                      {student.totalScore}
-                    </div>
-                  </div>
-                  
-                  {/* Tooltip on hover */}
-                  <div className="score-tooltip">
-                    <h4>Score Breakdown</h4>
-                    {Object.keys(getSchemaForInstrument(student.instrument)).map(sel => {
-                      const selScores = student.scores?.[sel];
-                      if (!selScores) return <div key={sel} className="breakdown-section"><strong>{sel}:</strong> Pending</div>;
-                      
-                      // Detect nested Etude structure (band columns)
-                      const cats = getSchemaForInstrument(student.instrument)[sel];
-                      const firstKey = Object.keys(selScores).find(k => k !== '_comment');
-                      const isNested = firstKey && typeof selScores[firstKey] === 'object' && selScores[firstKey] !== null;
+                      <div className="card-footer">
+                        <input
+                          type="checkbox"
+                          className="integrity-checkbox"
+                          checked={student.auditionIntegrity || false}
+                          onChange={(e) => handleIntegrityToggle(e, student)}
+                          onClick={(e) => e.stopPropagation()}
+                          title="Audition Integrity"
+                        />
 
-                      return (
-                        <div key={sel} className="breakdown-section">
-                          <strong>{sel}</strong>
-                          {isNested ? (
-                            Object.entries(selScores).filter(([k]) => k !== '_comment').map(([band, bandScores]) => (
-                              <div key={band}>
-                                <em style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{band}</em>
+                        <div className="placement-slider-container" onClick={e => e.stopPropagation()}>
+                          <div className="mini-slider-labels">
+                            <span>C</span>
+                            <span>S</span>
+                            <span>H</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="1"
+                            max="3"
+                            step="1"
+                            value={(() => {
+                              if (student.etudeLevel !== undefined && student.etudeLevel !== null) return student.etudeLevel;
+                              const p = parseInt(student.studentPlacement);
+                              if (p === 1) return 3;
+                              if (p === 2) return 2;
+                              return 1;
+                            })()}
+                            onChange={(e) => handleEtudeLevelChange(e, student)}
+                            className="mini-placement-slider"
+                            title="Etude Filter: Left=Concert, Middle=Concert+Symph, Right=All"
+                          />
+                        </div>
+
+                        <div className="total-score-large" title="Total Score">
+                          {student.totalScore}
+                        </div>
+                      </div>
+
+                      {/* Tooltip on hover */}
+                      <div className="score-tooltip">
+                        <h4>Score Breakdown</h4>
+                        {Object.keys(getSchemaForInstrument(student.instrument)).map(sel => {
+                          const selScores = student.scores?.[sel];
+                          if (!selScores) return <div key={sel} className="breakdown-section"><strong>{sel}:</strong> Pending</div>;
+
+                          // Detect nested Etude structure (band columns)
+                          const cats = getSchemaForInstrument(student.instrument)[sel];
+                          const firstKey = Object.keys(selScores).find(k => k !== '_comment');
+                          const isNested = firstKey && typeof selScores[firstKey] === 'object' && selScores[firstKey] !== null;
+
+                          return (
+                            <div key={sel} className="breakdown-section">
+                              <strong>{sel}</strong>
+                              {isNested ? (
+                                Object.entries(selScores)
+                                  .filter(([k]) => k !== '_comment')
+                                  .sort(([a], [b]) => {
+                                    if (sel !== 'Etude') return 0;
+                                    const order = { 'Concert': 1, 'Symphonic': 2, 'Honor': 3 };
+                                    return (order[a] || 99) - (order[b] || 99);
+                                  })
+                                  .map(([band, bandScores]) => (
+                                    <div key={band}>
+                                      <em style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{band}</em>
+                                      <ul>
+                                        {cats.map(cat => {
+                                          const score = typeof bandScores[cat] === 'number' ? bandScores[cat] : 0;
+                                          return <li key={cat}>{cat}: {score}</li>;
+                                        })}
+                                      </ul>
+                                    </div>
+                                  ))
+                              ) : (
                                 <ul>
                                   {cats.map(cat => {
-                                    const score = typeof bandScores[cat] === 'number' ? bandScores[cat] : 0;
+                                    const val = selScores[cat];
+                                    const score = typeof val === 'number' ? val : (val?.score ?? 0);
                                     return <li key={cat}>{cat}: {score}</li>;
                                   })}
                                 </ul>
-                              </div>
-                            ))
-                          ) : (
-                            <ul>
-                              {cats.map(cat => {
-                                const val = selScores[cat];
-                                const score = typeof val === 'number' ? val : (val?.score ?? 0);
-                                return <li key={cat}>{cat}: {score}</li>;
-                              })}
-                            </ul>
-                          )}
-                          {selScores._comment && <p className="comment-text">"{selScores._comment}"</p>}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-              })}
+                              )}
+                              {selScores._comment && <p className="comment-text">"{selScores._comment}"</p>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
-        {Object.keys(groupedStudents).length === 0 && (
-          <p className="subtitle">No students found.</p>
-        )}
-      </div>
+          ))}
+          {Object.keys(groupedStudents).length === 0 && (
+            <p className="subtitle">No students found.</p>
+          )}
+        </div>
       )}
 
       {selectedStudent && (
@@ -545,33 +563,42 @@ export default function ResultsPage() {
                 </button>
               </div>
             </div>
-            
+
             <div className="settings-info">
               {isEditing ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
                   <div>
                     <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>First Name</label>
-                    <input type="text" value={editForm.firstName} onChange={e => setEditForm({...editForm, firstName: e.target.value})} />
+                    <input type="text" value={editForm.firstName} onChange={e => setEditForm({ ...editForm, firstName: e.target.value })} />
                   </div>
                   <div>
                     <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Last Name</label>
-                    <input type="text" value={editForm.lastName} onChange={e => setEditForm({...editForm, lastName: e.target.value})} />
+                    <input type="text" value={editForm.lastName} onChange={e => setEditForm({ ...editForm, lastName: e.target.value })} />
                   </div>
                   <div>
                     <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Grade</label>
-                    <select value={editForm.grade} onChange={e => setEditForm({...editForm, grade: e.target.value})}>
+                    <select value={editForm.grade} onChange={e => setEditForm({ ...editForm, grade: e.target.value })}>
                       {[6, 7, 8].map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Student Placement</label>
-                    <input type="text" value={editForm.studentPlacement} onChange={e => setEditForm({...editForm, studentPlacement: e.target.value})} placeholder="Optional" />
+                    <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Expected Band</label>
+                    <select value={editForm.studentPlacement} onChange={e => setEditForm({ ...editForm, studentPlacement: e.target.value })}>
+                      <option value="">-</option>
+                      <option value="1">Honor</option>
+                      <option value="2">Symphonic</option>
+                      <option value="3">Concert</option>
+                      <option value="4">Intermediate</option>
+                    </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Rehearsal Skills (1-4)</label>
-                    <select value={editForm.rehearsalSkills} onChange={e => setEditForm({...editForm, rehearsalSkills: e.target.value})}>
+                    <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Rehearsal Skills</label>
+                    <select value={editForm.rehearsalSkills} onChange={e => setEditForm({ ...editForm, rehearsalSkills: e.target.value })}>
                       <option value="">-</option>
-                      {[1, 2, 3, 4].map(s => <option key={s} value={s}>{s}</option>)}
+                      <option value="1">Honor</option>
+                      <option value="2">Symphonic</option>
+                      <option value="3">Concert</option>
+                      <option value="4">Intermediate</option>
                     </select>
                   </div>
                   <button className="btn" onClick={handleSaveEdit} style={{ marginTop: '1rem' }}>Save Changes</button>
@@ -582,22 +609,29 @@ export default function ResultsPage() {
                   <p><strong>Instrument:</strong> {selectedStudent.instrument}</p>
                   <p><strong>Grade:</strong> {selectedStudent.grade}</p>
                   <p><strong>Band Placement:</strong> {selectedStudent.bandPlacement || 'None'}</p>
-                  <p><strong>Student Placement:</strong> {selectedStudent.studentPlacement || 'None'}</p>
+                  <p><strong>Expected:</strong> {(() => {
+                    const mapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
+                    return mapping[selectedStudent.studentPlacement] || selectedStudent.studentPlacement || 'None';
+                  })()}</p>
+                  <p><strong>Rehearsal Skills:</strong> {(() => {
+                    const mapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
+                    return mapping[selectedStudent.rehearsalSkills] || selectedStudent.rehearsalSkills || 'None';
+                  })()}</p>
                   <p><strong>Total Score:</strong> {selectedStudent.totalScore}</p>
                 </>
               )}
             </div>
-            
+
             {selectedStudent.scoredCount > 0 && (
               <>
                 <hr className="settings-divider" />
-                
+
                 <h2>Score Breakdown</h2>
                 <div className="settings-scores">
                   {Object.keys(getSchemaForInstrument(selectedStudent.instrument)).map(sel => {
                     const selScores = selectedStudent.scores?.[sel];
                     if (!selScores) return <div key={sel} className="settings-breakdown-section"><h3>{sel}</h3><p>Pending</p></div>;
-                    
+
                     return (
                       <div key={sel} className="settings-breakdown-section">
                         <h3>{sel}</h3>
@@ -615,7 +649,7 @@ export default function ResultsPage() {
                 </div>
               </>
             )}
-            
+
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
               <button className="btn btn-delete" onClick={() => handleDelete(selectedStudent.id)} style={{ width: '50%' }}>
                 DELETE STUDENT

@@ -27,9 +27,11 @@ export default async function StudentPage({ params }) {
 
   return (
     <div>
-      <Link href={`/${instrument}`} className="back-link">
-        &larr; Back to {displayInstrument} Students
-      </Link>
+      <div className="evaluation-nav">
+        <Link href={`/${instrument}`} className="back-link">
+          &larr; Back to {displayInstrument} Students
+        </Link>
+      </div>
       
       <h1>Student #{student.number}</h1>
       <p className="subtitle">Select a piece to evaluate</p>

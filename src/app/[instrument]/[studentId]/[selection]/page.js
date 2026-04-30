@@ -166,9 +166,14 @@ export default function JudgingForm({ params }) {
 
   return (
     <div style={{ maxWidth: isEtude ? '1200px' : '350px', margin: '0 auto' }}>
-      <Link href={`/${instrument}/${studentId}`} className="back-link">
-        &larr; Back to Student #{student.number}
-      </Link>
+      <div className="evaluation-nav">
+        <Link href={`/${instrument}/${studentId}`} className="back-link">
+          &larr; Back to Student #{student.number}
+        </Link>
+        <Link href={`/${instrument}`} className="back-link">
+          &larr; Back to {displayInstrument} List
+        </Link>
+      </div>
       
       <h1 style={{ fontSize: '1.8rem' }}>Evaluate {decodedSelection}</h1>
       <p className="subtitle" style={{ marginBottom: '1.5rem' }}>{displayInstrument} - Student #{student.number}</p>
