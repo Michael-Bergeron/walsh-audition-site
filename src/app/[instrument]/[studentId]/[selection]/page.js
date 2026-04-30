@@ -117,13 +117,9 @@ export default function JudgingForm({ params }) {
           return (
             <div key={category} className="form-group">
               <div className="form-label">
-                <label>
-                  {category}
-                  {weight > 1 && <span style={{ marginLeft: '0.4rem', fontSize: '0.75rem', color: '#f59e0b', fontWeight: 700 }}>×{weight}</span>}
-                </label>
+                <label>{category}</label>
                 <span className="score-value">
                   {isTone ? TONE_LABELS[currentScore - 1] : `${currentScore} / 5`}
-                  {weight > 1 && <span style={{ marginLeft: '0.3rem', fontSize: '0.8rem', color: '#f59e0b' }}>(={currentScore * weight})</span>}
                 </span>
               </div>
               
