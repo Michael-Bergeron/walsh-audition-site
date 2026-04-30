@@ -26,6 +26,9 @@ export const INSTRUMENT_SCHEMA = {
 export const SELECTION_WEIGHTS = {
   'Etude': {
     'Tone': 3
+  },
+  'Major Scale': {
+    'Tone': 2
   }
 };
 
