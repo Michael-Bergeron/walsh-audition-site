@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import * as XLSX from 'xlsx';
 import './results.css';
 import { getSchemaForInstrument } from '@/lib/schema';
 
@@ -131,6 +132,17 @@ export default function ResultsPage() {
       console.error('Failed to update band placement', e);
     }
   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.custom-dropdown')) {
+        setInstOpen(false);
+        setBandOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
 
@@ -215,6 +227,72 @@ export default function ResultsPage() {
     }
   };
 
+  const handleExport = () => {
+    const wb = XLSX.utils.book_new();
+    const bandsMapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
+
+    // Group students by instrument
+    const instruments = Array.from(new Set(students.map(s => s.instrument))).sort();
+
+    instruments.forEach(inst => {
+      const instStudents = students.filter(s => s.instrument === inst);
+      const schema = getSchemaForInstrument(inst);
+      const selections = Object.keys(schema);
+
+      const data = instStudents.map(student => {
+        const row = {
+          'Number': student.number,
+          'First Name': student.firstName,
+          'Last Name': student.lastName,
+          'Grade': student.grade,
+          'Expected': bandsMapping[student.studentPlacement] || student.studentPlacement || '-',
+          'Rehearsal Skills': bandsMapping[student.rehearsalSkills] || student.rehearsalSkills || '-',
+          'Total Score': student.totalScore || 0
+        };
+
+        // Add scores for each selection
+        selections.forEach(sel => {
+          const selScores = student.scores?.[sel];
+          const cats = schema[sel];
+
+          if (!selScores) {
+            cats.forEach(cat => {
+              if (sel === 'Etude') {
+                ['Concert', 'Symphonic', 'Honor'].forEach(band => {
+                  row[`${sel} - ${band} - ${cat}`] = 0;
+                });
+              } else {
+                row[`${sel} - ${cat}`] = 0;
+              }
+            });
+            return;
+          }
+
+          if (sel === 'Etude') {
+            ['Concert', 'Symphonic', 'Honor'].forEach(band => {
+              const bandScores = selScores[band] || {};
+              cats.forEach(cat => {
+                row[`${sel} - ${band} - ${cat}`] = bandScores[cat] || 0;
+              });
+            });
+          } else {
+            cats.forEach(cat => {
+              const val = selScores[cat];
+              row[`${sel} - ${cat}`] = typeof val === 'number' ? val : (val?.score ?? 0);
+            });
+          }
+        });
+
+        return row;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, inst);
+    });
+
+    XLSX.writeFile(wb, "Audition_Results.xlsx");
+  };
+
   // totalScore is now pre-calculated by the backend
 
   const getScoredCount = (scores, instrument) => {
@@ -282,6 +360,10 @@ export default function ResultsPage() {
         <h1>Audition Results</h1>
 
         <div className="filter-bar">
+          <button className="export-btn" onClick={handleExport} title="Export to Excel">
+            📥 Export
+          </button>
+          
           <div className="custom-dropdown">
             <button className="dropdown-button" onClick={() => setInstOpen(!instOpen)}>
               Instruments ({instrumentFilter.length === 0 ? 'All' : instrumentFilter.length}) ▾
