@@ -165,18 +165,18 @@ export default function JudgingForm({ params }) {
   const displayInstrument = instrument.charAt(0).toUpperCase() + instrument.slice(1);
 
   return (
-    <div style={{ maxWidth: isEtude ? '1400px' : '800px', margin: '0 auto' }}>
+    <div style={{ maxWidth: isEtude ? '1200px' : '350px', margin: '0 auto' }}>
       <Link href={`/${instrument}/${studentId}`} className="back-link">
         &larr; Back to Student #{student.number}
       </Link>
       
-      <h1>Evaluate {decodedSelection}</h1>
-      <p className="subtitle">{displayInstrument} - Student #{student.number}</p>
+      <h1 style={{ fontSize: '1.8rem' }}>Evaluate {decodedSelection}</h1>
+      <p className="subtitle" style={{ marginBottom: '1.5rem' }}>{displayInstrument} - Student #{student.number}</p>
       
       <form onSubmit={handleSubmit}>
         {isEtude ? (
           // 3-column Etude layout
-          <div className="etude-columns">
+          <div className="etude-columns" style={{ justifyContent: 'center' }}>
             {ETUDE_BANDS.map(band => (
               <div key={band} className="etude-column glass-panel">
                 <h3 className="etude-band-heading">{band}</h3>
@@ -194,7 +194,7 @@ export default function JudgingForm({ params }) {
           </div>
         ) : (
           // Standard single-column layout
-          <div className="glass-panel">
+          <div className="glass-panel" style={{ width: '350px', margin: '0 auto' }}>
             {subcategories.map(category => (
               <SliderGroup
                 key={category}
@@ -208,7 +208,7 @@ export default function JudgingForm({ params }) {
         )}
 
         {/* Single comment and submit always at the bottom */}
-        <div style={{ maxWidth: '500px', margin: '1.5rem auto 0' }}>
+        <div style={{ maxWidth: '350px', margin: '1.5rem auto 0' }}>
           <div className="glass-panel">
             <div className="form-group">
               <div className="form-label"><label>Comments</label></div>

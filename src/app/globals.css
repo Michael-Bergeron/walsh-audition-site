@@ -142,8 +142,9 @@ h2 {
 .form-label {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.15rem;
   font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .score-value {
@@ -155,7 +156,7 @@ input[type=range] {
   -webkit-appearance: none;
   width: 100%;
   background: transparent;
-  margin-bottom: 1rem;
+  margin-bottom: 0.25rem;
 }
 
 input[type=range]::-webkit-slider-thumb {
@@ -294,8 +295,8 @@ textarea:focus {
 }
 
 .etude-column {
-  flex: 1;
-  min-width: 0;
+  width: 350px;
+  flex: 0 0 350px;
 }
 
 .etude-band-heading {
@@ -308,46 +309,32 @@ textarea:focus {
   padding-bottom: 0.5rem;
 }
 
-.etude-column .form-label {
-  margin-bottom: 0.15rem;
-  font-size: 0.85rem;
-}
 
-.etude-column .slider-container {
-  margin-bottom: 0.25rem;
-}
 
-.etude-column input[type=range] {
-  margin-bottom: 0.25rem;
-}
-
-.etude-column .slider-labels {
-  height: auto;
-  font-size: 0.62rem;
-  white-space: normal;
-  text-align: center;
-}
 
 .slider-container {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  margin-bottom: 24px;
+  margin-bottom: 0.5rem;
 }
 
 .slider-labels {
   position: relative;
-  height: 1.4em;
+  height: auto;
+  min-height: 1.1em;
   margin-top: 0.25rem;
+  text-align: center;
 }
 
 .slider-labels span {
   position: absolute;
   transform: translateX(-50%);
-  font-size: 0.8rem;
+  font-size: 0.62rem;
   color: var(--text-muted);
   font-weight: 600;
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.1;
 }
 
 .slider-labels span:nth-child(1) { left: 0%; }
