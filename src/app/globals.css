@@ -293,7 +293,7 @@ textarea:focus {
 .slider-labels {
   display: flex;
   justify-content: space-between;
-  padding: 0 8px; /* Offset to align with thumb */
+  padding: 0 10px; /* Align with range thumb edges */
   font-size: 0.85rem;
   color: var(--text-muted);
   font-weight: 600;
