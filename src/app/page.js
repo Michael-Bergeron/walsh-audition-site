@@ -95,14 +95,14 @@ export default function Home() {
                 <div className="form-label"><label>Student Placement (Optional)</label></div>
                 <select value={formData.studentPlacement} onChange={e => setFormData({...formData, studentPlacement: e.target.value})}>
                   <option value="">-- Select --</option>
-                  {[1, 2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
+                  {['Honor', 'Symphonic', 'Concert', 'Intermediate', 'Beginner'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               </div>
               <div className="form-group">
                 <div className="form-label"><label>Rehearsal Skills (Optional)</label></div>
                 <select value={formData.rehearsalSkills} onChange={e => setFormData({...formData, rehearsalSkills: e.target.value})}>
                   <option value="">-- Select --</option>
-                  {[1, 2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
+                  {['Honor', 'Symphonic', 'Concert', 'Intermediate', 'Beginner'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               </div>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>

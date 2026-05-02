@@ -327,6 +327,21 @@ textarea:focus {
   padding-bottom: 0.5rem;
 }
 
+.etude-column-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+
+.etude-column-disabled .etude-band-heading {
+  color: var(--text-muted);
+}
+
+.etude-column-disabled label {
+  pointer-events: auto; /* Allow re-enabling */
+}
+
+
 
 
 

@@ -157,13 +157,13 @@
 }
 
 .band-honor {
-  background: rgba(234, 179, 8, 0.2) !important;
-  border-color: rgba(234, 179, 8, 0.6) !important;
+  background: rgba(34, 197, 94, 0.2) !important;
+  border-color: rgba(34, 197, 94, 0.6) !important;
 }
 
 .band-symphonic {
-  background: rgba(239, 68, 68, 0.2) !important;
-  border-color: rgba(239, 68, 68, 0.6) !important;
+  background: rgba(253, 224, 71, 0.25) !important;
+  border-color: rgba(253, 224, 71, 0.8) !important;
 }
 
 .band-concert {
@@ -172,8 +172,8 @@
 }
 
 .band-intermediate {
-  background: rgba(34, 197, 94, 0.2) !important;
-  border-color: rgba(34, 197, 94, 0.6) !important;
+  background: rgba(234, 88, 12, 0.3) !important;
+  border-color: rgba(234, 88, 12, 0.8) !important;
 }
 
 .student-result-header {
@@ -195,7 +195,7 @@
 }
 
 .student-score {
-  font-size: 1.1rem;
+  font-size: calc(1.1rem - 1px);
 }
 
 .card-footer {
@@ -305,6 +305,11 @@
 
 .student-result-card:hover .score-tooltip {
   display: block;
+}
+
+.instrument-column.column-far-right .score-tooltip {
+  left: auto;
+  right: 105%;
 }
 
 .score-tooltip h4 {
@@ -481,13 +486,13 @@
 }
 
 .minimal-bg-honor {
-  background: rgba(234, 179, 8, 0.4);
-  border-bottom: 1px solid rgba(234, 179, 8, 0.6);
+  background: rgba(34, 197, 94, 0.4);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.6);
 }
 
 .minimal-bg-symphonic {
-  background: rgba(239, 68, 68, 0.4);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.6);
+  background: rgba(253, 224, 71, 0.4);
+  border-bottom: 1px solid rgba(253, 224, 71, 0.6);
 }
 
 .minimal-bg-concert {
@@ -496,8 +501,8 @@
 }
 
 .minimal-bg-intermediate {
-  background: rgba(34, 197, 94, 0.4);
-  border-bottom: 1px solid rgba(34, 197, 94, 0.6);
+  background: rgba(234, 88, 12, 0.4);
+  border-bottom: 1px solid rgba(234, 88, 12, 0.6);
 }
 
 .minimal-columns-container {
@@ -559,3 +564,32 @@
   font-weight: bold;
   color: #60a5fa;
 }
+
+/* Band Key */
+.band-key {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.key-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.key-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.key-dot.honor { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+.key-dot.symphonic { background: #fde047; box-shadow: 0 0 10px rgba(253, 224, 71, 0.5); }
+.key-dot.concert { background: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.4); }
+.key-dot.intermediate { background: #ea580c; box-shadow: 0 0 10px rgba(234, 88, 12, 0.5); }

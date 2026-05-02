@@ -245,8 +245,8 @@ export default function ResultsPage() {
           'First Name': student.firstName,
           'Last Name': student.lastName,
           'Grade': student.grade,
-          'Expected': bandsMapping[student.studentPlacement] || student.studentPlacement || '-',
-          'Rehearsal Skills': bandsMapping[student.rehearsalSkills] || student.rehearsalSkills || '-',
+          'Goal': student.studentPlacement || '-',
+          'Rehearsal Skills': student.rehearsalSkills || '-',
           'Total Score': student.totalScore || 0
         };
 
@@ -358,6 +358,13 @@ export default function ResultsPage() {
       <div className="results-header">
         <Link href="/" className="back-link">&larr; Back to Home</Link>
         <h1>Audition Results</h1>
+        
+        <div className="band-key">
+          <div className="key-item"><span className="key-dot honor"></span> Honor</div>
+          <div className="key-item"><span className="key-dot symphonic"></span> Symphonic</div>
+          <div className="key-item"><span className="key-dot concert"></span> Concert</div>
+          <div className="key-item"><span className="key-dot intermediate"></span> Intermediate</div>
+        </div>
 
         <div className="filter-bar">
           <button className="export-btn" onClick={handleExport} title="Export to Excel">
@@ -492,18 +499,20 @@ export default function ResultsPage() {
         </DragDropContext>
       ) : (
         <div className="columns-container">
-          {instrumentsList.slice(1).filter(inst => groupedStudents[inst]).map(instrument => (
-            <div key={instrument} className="instrument-column">
-              <h2 className="column-title">{instrument}</h2>
-              <div className="students-list">
-                {groupedStudents[instrument].map(student => {
-                  const bandClass = student.bandPlacement ? `band-${student.bandPlacement.split(' ')[0].toLowerCase()}` : '';
-                  return (
-                    <div
-                      key={student.id}
-                      className={`student-result-card card-${student.status} ${bandClass}`}
-                      onClick={() => handleCardClick(student)}
-                    >
+          {instrumentsList.slice(1).filter(inst => groupedStudents[inst]).map((instrument, idx, visibleInsts) => {
+            const isFarRight = visibleInsts.length > 2 && idx >= visibleInsts.length - 2;
+            return (
+              <div key={instrument} className={`instrument-column ${isFarRight ? 'column-far-right' : ''}`}>
+                <h2 className="column-title">{instrument}</h2>
+                <div className="students-list">
+                  {groupedStudents[instrument].map(student => {
+                    const bandClass = student.bandPlacement ? `band-${student.bandPlacement.split(' ')[0].toLowerCase()}` : '';
+                    return (
+                      <div
+                        key={student.id}
+                        className={`student-result-card card-${student.status} ${bandClass}`}
+                        onClick={() => handleCardClick(student)}
+                      >
                       <div className="student-result-header">
                         <div>
                           <span className="student-number">#{student.number}</span>
@@ -518,15 +527,9 @@ export default function ResultsPage() {
                         </button>
                       </div>
                       <div className="student-score">
-                        {student.grade}, Expected: <strong>{(() => {
-                          const mapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
-                          return mapping[student.studentPlacement] || student.studentPlacement || '-';
-                        })()}</strong>
+                        {student.grade}, Goal: <strong>{student.studentPlacement || '-'}</strong>
                         <br />
-                        Rehearsal Skills: <strong>{(() => {
-                          const mapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
-                          return mapping[student.rehearsalSkills] || student.rehearsalSkills || '-';
-                        })()}</strong>
+                        Rehearsal Skills: <strong>{student.rehearsalSkills || '-'}</strong>
                       </div>
 
                       <div className="card-footer">
@@ -552,9 +555,9 @@ export default function ResultsPage() {
                             step="1"
                             value={(() => {
                               if (student.etudeLevel !== undefined && student.etudeLevel !== null) return student.etudeLevel;
-                              const p = parseInt(student.studentPlacement);
-                              if (p === 1) return 3;
-                              if (p === 2) return 2;
+                              const p = student.studentPlacement;
+                              if (p === 'Honor') return 3;
+                              if (p === 'Symphonic') return 2;
                               return 1;
                             })()}
                             onChange={(e) => handleEtudeLevelChange(e, student)}
@@ -621,8 +624,10 @@ export default function ResultsPage() {
                 })}
               </div>
             </div>
-          ))}
-          {Object.keys(groupedStudents).length === 0 && (
+            );
+          })}
+
+  {Object.keys(groupedStudents).length === 0 && (
             <p className="subtitle">No students found.</p>
           )}
         </div>
@@ -664,23 +669,17 @@ export default function ResultsPage() {
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Expected Band</label>
+                    <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Goal Band</label>
                     <select value={editForm.studentPlacement} onChange={e => setEditForm({ ...editForm, studentPlacement: e.target.value })}>
                       <option value="">-</option>
-                      <option value="1">Honor</option>
-                      <option value="2">Symphonic</option>
-                      <option value="3">Concert</option>
-                      <option value="4">Intermediate</option>
+                      {['Honor', 'Symphonic', 'Concert', 'Intermediate', 'Beginner'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Rehearsal Skills</label>
                     <select value={editForm.rehearsalSkills} onChange={e => setEditForm({ ...editForm, rehearsalSkills: e.target.value })}>
                       <option value="">-</option>
-                      <option value="1">Honor</option>
-                      <option value="2">Symphonic</option>
-                      <option value="3">Concert</option>
-                      <option value="4">Intermediate</option>
+                      {['Honor', 'Symphonic', 'Concert', 'Intermediate', 'Beginner'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
                   </div>
                   <button className="btn" onClick={handleSaveEdit} style={{ marginTop: '1rem' }}>Save Changes</button>
@@ -691,14 +690,8 @@ export default function ResultsPage() {
                   <p><strong>Instrument:</strong> {selectedStudent.instrument}</p>
                   <p><strong>Grade:</strong> {selectedStudent.grade}</p>
                   <p><strong>Band Placement:</strong> {selectedStudent.bandPlacement || 'None'}</p>
-                  <p><strong>Expected:</strong> {(() => {
-                    const mapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
-                    return mapping[selectedStudent.studentPlacement] || selectedStudent.studentPlacement || 'None';
-                  })()}</p>
-                  <p><strong>Rehearsal Skills:</strong> {(() => {
-                    const mapping = { 1: 'Honor', 2: 'Symphonic', 3: 'Concert', 4: 'Intermediate' };
-                    return mapping[selectedStudent.rehearsalSkills] || selectedStudent.rehearsalSkills || 'None';
-                  })()}</p>
+                  <p><strong>Goal:</strong> {selectedStudent.studentPlacement || 'None'}</p>
+                  <p><strong>Rehearsal Skills:</strong> {selectedStudent.rehearsalSkills || 'None'}</p>
                   <p><strong>Total Score:</strong> {selectedStudent.totalScore}</p>
                 </>
               )}

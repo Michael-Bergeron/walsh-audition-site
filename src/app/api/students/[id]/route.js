@@ -38,8 +38,8 @@ export async function PUT(request, { params }) {
     if (grade !== undefined) student.grade = parseInt(grade);
     if (studentPlacement !== undefined) student.studentPlacement = studentPlacement || null;
     if (auditionIntegrity !== undefined) student.auditionIntegrity = auditionIntegrity;
-    if (rehearsalSkills !== undefined) student.rehearsalSkills = rehearsalSkills ? parseInt(rehearsalSkills) : null;
-    if (etudeLevel !== undefined) student.etudeLevel = parseInt(etudeLevel);
+    if (rehearsalSkills !== undefined) student.rehearsalSkills = rehearsalSkills || null;
+    if (etudeLevel !== undefined) student.etudeLevel = etudeLevel ? parseInt(etudeLevel) : null;
     
     if (selection && scores) {
       if (!student.scores) student.scores = {};
@@ -49,15 +49,14 @@ export async function PUT(request, { params }) {
     // Recalculate total score
     let newTotal = 0;
     if (student.scores) {
-      // Use etudeLevel (1,2,3) if present, else fallback to mapping from studentPlacement
       let level = student.etudeLevel;
       if (level === undefined || level === null) {
-        const placement = parseInt(student.studentPlacement) || 3;
-        if (placement === 1) level = 3;
-        else if (placement === 2) level = 2;
+        const p = student.studentPlacement;
+        if (p === 'Honor') level = 3;
+        else if (p === 'Symphonic') level = 2;
         else level = 1;
       }
-      
+
       Object.entries(student.scores).forEach(([selectionName, selectionScores]) => {
         if (!selectionScores) return;
 

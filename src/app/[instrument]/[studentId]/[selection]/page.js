@@ -74,6 +74,7 @@ export default function JudgingForm({ params }) {
 
   const [scores, setScores] = useState(buildInitial);
   const [comment, setComment] = useState('');
+  const [countScores, setCountScores] = useState({ Symphonic: false, Honor: false, Concert: true });
 
   useEffect(() => {
     async function fetchStudent() {
@@ -90,8 +91,10 @@ export default function JudgingForm({ params }) {
             if (isEtude) {
               // Restore nested band scores
               const rebuilt = buildInitial();
+              const newCountScores = { Concert: true, Symphonic: false, Honor: false };
               ETUDE_BANDS.forEach(band => {
                 if (saved[band]) {
+                  newCountScores[band] = true;
                   subcategories.forEach(sub => {
                     const val = saved[band][sub];
                     rebuilt[band][sub] = typeof val === 'number' ? val : (val?.score ?? 3);
@@ -99,6 +102,7 @@ export default function JudgingForm({ params }) {
                 }
               });
               setScores(rebuilt);
+              setCountScores(newCountScores);
             } else {
               const rebuilt = {};
               subcategories.forEach(sub => {
@@ -107,6 +111,17 @@ export default function JudgingForm({ params }) {
               });
               setScores(rebuilt);
             }
+          } else if (isEtude && data.studentPlacement) {
+            // Auto-logic for initial scoring
+            const p = data.studentPlacement;
+            const newCountScores = { Concert: true, Symphonic: false, Honor: false };
+            if (p === 'Honor') {
+              newCountScores.Symphonic = true;
+              newCountScores.Honor = true;
+            } else if (p === 'Symphonic') {
+              newCountScores.Symphonic = true;
+            }
+            setCountScores(newCountScores);
           }
         }
       } catch (e) {
@@ -134,9 +149,17 @@ export default function JudgingForm({ params }) {
     e.preventDefault();
     setSubmitting(true);
     
-    const payload = isEtude
-      ? { ...scores, _comment: comment }
-      : { ...scores, _comment: comment };
+    let payload;
+    if (isEtude) {
+      payload = { _comment: comment };
+      ETUDE_BANDS.forEach(band => {
+        if (countScores[band]) {
+          payload[band] = scores[band];
+        }
+      });
+    } else {
+      payload = { ...scores, _comment: comment };
+    }
 
     try {
       const res = await fetch(`/api/students/${studentId}`, {
@@ -183,8 +206,20 @@ export default function JudgingForm({ params }) {
           // 3-column Etude layout
           <div className="etude-columns" style={{ justifyContent: 'center' }}>
             {ETUDE_BANDS.map(band => (
-              <div key={band} className="etude-column glass-panel">
-                <h3 className="etude-band-heading">{band}</h3>
+              <div key={band} className={`etude-column glass-panel ${!countScores[band] ? 'etude-column-disabled' : ''}`}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <h3 className="etude-band-heading" style={{ margin: 0 }}>{band}</h3>
+                  {band !== 'Concert' && (
+                    <label style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={countScores[band]} 
+                        onChange={(e) => setCountScores({ ...countScores, [band]: e.target.checked })}
+                      />
+                      Count score
+                    </label>
+                  )}
+                </div>
                 {subcategories.map(category => (
                   <SliderGroup
                     key={category}
