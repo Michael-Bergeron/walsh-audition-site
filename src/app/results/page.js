@@ -25,9 +25,11 @@ export default function ResultsPage() {
   const [isMinimalView, setIsMinimalView] = useState(false);
   const [instrumentFilter, setInstrumentFilter] = useState([]); // Empty = All
   const [bandFilter, setBandFilter] = useState([]); // Empty = All
+  const [sortBy, setSortBy] = useState('score');
 
   const [instOpen, setInstOpen] = useState(false);
   const [bandOpen, setBandOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
@@ -137,6 +139,7 @@ export default function ResultsPage() {
       if (!event.target.closest('.custom-dropdown')) {
         setInstOpen(false);
         setBandOpen(false);
+        setSortOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -342,6 +345,13 @@ export default function ResultsPage() {
       if (statusOrder[a.status] !== statusOrder[b.status]) {
         return statusOrder[a.status] - statusOrder[b.status];
       }
+      if (sortBy === 'firstName') {
+        return (a.firstName || '').localeCompare(b.firstName || '');
+      } else if (sortBy === 'lastName') {
+        return (a.lastName || '').localeCompare(b.lastName || '');
+      } else if (sortBy === 'number') {
+        return (parseInt(a.number) || 0) - (parseInt(b.number) || 0);
+      }
       return b.totalScore - a.totalScore;
     });
 
@@ -425,6 +435,28 @@ export default function ResultsPage() {
                     /> {band}
                   </label>
                 ))}
+              </div>
+            )}
+          </div>
+
+          <div className="custom-dropdown">
+            <button className="dropdown-button" onClick={() => setSortOpen(!sortOpen)}>
+              Sort by: {sortBy === 'score' ? 'Score' : sortBy === 'firstName' ? 'First Name' : sortBy === 'lastName' ? 'Last Name' : 'Number'} ▾
+            </button>
+            {sortOpen && (
+              <div className="dropdown-menu">
+                <label>
+                  <input type="radio" name="sort" checked={sortBy === 'score'} onChange={() => { setSortBy('score'); setSortOpen(false); }} /> Score
+                </label>
+                <label>
+                  <input type="radio" name="sort" checked={sortBy === 'firstName'} onChange={() => { setSortBy('firstName'); setSortOpen(false); }} /> First Name
+                </label>
+                <label>
+                  <input type="radio" name="sort" checked={sortBy === 'lastName'} onChange={() => { setSortBy('lastName'); setSortOpen(false); }} /> Last Name
+                </label>
+                <label>
+                  <input type="radio" name="sort" checked={sortBy === 'number'} onChange={() => { setSortBy('number'); setSortOpen(false); }} /> Number
+                </label>
               </div>
             )}
           </div>

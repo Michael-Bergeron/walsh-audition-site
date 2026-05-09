@@ -11,6 +11,7 @@ async function getStudents(instrument) {
     if (instrument) {
       students = students.filter(s => s.instrument.toLowerCase() === instrument.toLowerCase());
     }
+    students.sort((a, b) => a.number - b.number);
     return students;
   } catch (error) {
     console.error(error);

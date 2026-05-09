@@ -75,9 +75,12 @@ export default function JudgingForm({ params }) {
   const [scores, setScores] = useState(buildInitial);
   const [comment, setComment] = useState('');
   const [countScores, setCountScores] = useState({ Symphonic: false, Honor: false, Concert: true });
+  
+  const [prevStudentId, setPrevStudentId] = useState(null);
+  const [nextStudentId, setNextStudentId] = useState(null);
 
   useEffect(() => {
-    async function fetchStudent() {
+    async function fetchData() {
       try {
         const res = await fetch(`/api/students/${studentId}`);
         if (res.ok) {
@@ -124,14 +127,27 @@ export default function JudgingForm({ params }) {
             setCountScores(newCountScores);
           }
         }
+
+        const listRes = await fetch(`/api/students?instrument=${instrument}`);
+        if (listRes.ok) {
+          const listData = await listRes.json();
+          listData.sort((a, b) => a.number - b.number);
+          const currentIndex = listData.findIndex(s => s.id === studentId);
+          if (currentIndex !== -1 && listData.length > 1) {
+            const prevIndex = currentIndex === 0 ? listData.length - 1 : currentIndex - 1;
+            const nextIndex = currentIndex === listData.length - 1 ? 0 : currentIndex + 1;
+            setPrevStudentId(listData[prevIndex].id);
+            setNextStudentId(listData[nextIndex].id);
+          }
+        }
       } catch (e) {
         console.error(e);
       } finally {
         setLoading(false);
       }
     }
-    fetchStudent();
-  }, [studentId, decodedSelection]);
+    fetchData();
+  }, [studentId, decodedSelection, instrument, isEtude]);
 
   const handleScoreChange = (bandOrCategory, categoryOrValue, value) => {
     if (isEtude) {
@@ -189,17 +205,30 @@ export default function JudgingForm({ params }) {
 
   return (
     <div style={{ maxWidth: isEtude ? '1200px' : '350px', margin: '0 auto' }}>
-      <div className="evaluation-nav">
-        <Link href={`/${instrument}/${studentId}`} className="back-link">
-          &larr; Back to Student #{student.number}
+      <div className="evaluation-nav" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <Link href={`/${instrument}/${studentId}`} className="back-link" style={{ margin: 0 }}>
+          &larr; Back
         </Link>
-        <Link href={`/${instrument}`} className="back-link">
-          &larr; Back to {displayInstrument} List
+        <Link href={`/${instrument}`} className="back-link" style={{ margin: 0 }}>
+          &larr; Student List
         </Link>
       </div>
       
       <h1 style={{ fontSize: '1.8rem' }}>Evaluate {decodedSelection}</h1>
-      <p className="subtitle" style={{ marginBottom: '1.5rem' }}>{displayInstrument} - Student #{student.number}</p>
+      <p className="subtitle" style={{ marginBottom: '1rem' }}>{displayInstrument} - Student #{student.number}</p>
+
+      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '1.5rem' }}>
+        {prevStudentId && (
+          <Link href={`/${instrument}/${prevStudentId}/${encodeURIComponent(decodedSelection)}`} className="btn btn-secondary" style={{ margin: 0, padding: '0.4rem 1rem', fontSize: '0.9rem', width: 'auto' }}>
+            &larr; Previous Student
+          </Link>
+        )}
+        {nextStudentId && (
+          <Link href={`/${instrument}/${nextStudentId}/${encodeURIComponent(decodedSelection)}`} className="btn btn-secondary" style={{ margin: 0, padding: '0.4rem 1rem', fontSize: '0.9rem', width: 'auto' }}>
+            Next Student &rarr;
+          </Link>
+        )}
+      </div>
       
       <form onSubmit={handleSubmit}>
         {isEtude ? (

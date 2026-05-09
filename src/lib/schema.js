@@ -18,7 +18,7 @@ export const INSTRUMENT_SCHEMA = {
   PERCUSSION: {
     'Etude': ['Tone', 'Dynamics', 'Technique'],
     'F scale sequence': ['Tone', 'Technique'],
-    'A scale sequence': ['Tone', 'Technique']
+    'E Scale Sequence': ['Tone', 'Technique']
   }
 };
 
