@@ -67,7 +67,7 @@ export default async function InstrumentPage({ params }) {
                       {isEvaluated ? (
                         <span style={{ color: 'var(--success)', fontSize: '0.7rem' }}>Done</span>
                       ) : (
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Incomplete</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Inc</span>
                       )}
                     </div>
                   );
