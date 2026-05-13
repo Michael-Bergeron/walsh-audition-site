@@ -341,10 +341,7 @@ export default function ResultsPage() {
   // Sort within each instrument: Evaluated first, then Pending, then Not Started. Then by score DESC.
   Object.keys(groupedStudents).forEach(inst => {
     groupedStudents[inst].sort((a, b) => {
-      const statusOrder = { 'evaluated': 1, 'pending': 2, 'not-started': 3 };
-      if (statusOrder[a.status] !== statusOrder[b.status]) {
-        return statusOrder[a.status] - statusOrder[b.status];
-      }
+      // Primary sort based on user selection
       if (sortBy === 'firstName') {
         return (a.firstName || '').localeCompare(b.firstName || '');
       } else if (sortBy === 'lastName') {
@@ -352,7 +349,15 @@ export default function ResultsPage() {
       } else if (sortBy === 'number') {
         return (parseInt(a.number) || 0) - (parseInt(b.number) || 0);
       }
-      return b.totalScore - a.totalScore;
+      
+      // Default: Sort by Score DESC
+      if (b.totalScore !== a.totalScore) {
+        return b.totalScore - a.totalScore;
+      }
+      
+      // Secondary sort: Status (Evaluated > Pending > Not Started)
+      const statusOrder = { 'evaluated': 1, 'pending': 2, 'not-started': 3 };
+      return statusOrder[a.status] - statusOrder[b.status];
     });
 
     let currentRank = 1;

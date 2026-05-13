@@ -37,26 +37,35 @@ export default async function InstrumentPage({ params }) {
       
       <div className="grid-container">
         {students.map(student => {
-          // Check how many selections are scored
           const schema = getSchemaForInstrument(instrument);
-          const totalSelections = Object.keys(schema).length;
-          const scoredCount = Object.keys(schema).filter(sel => student.scores && student.scores[sel]).length;
+          const abbr = {
+            'Etude': 'Etude',
+            'Major Scale': 'Major',
+            'Chromatic Scale': 'Chrom',
+            'Woodwind Workout': 'WW',
+            'Remington': 'Rem',
+            'F scale sequence': 'F',
+            'E Scale Sequence': 'E'
+          };
           
-          let statusText = 'Not Started';
-          let statusClass = 'status-not-started';
-          
-          if (scoredCount === totalSelections) {
-            statusText = 'Evaluated';
-            statusClass = 'status-done';
-          } else if (scoredCount > 0) {
-            statusText = 'Pending';
-            statusClass = 'status-pending';
-          }
-            
           return (
-            <Link href={`/${instrument}/${student.id}`} key={student.id} className="glass-card">
-              <h2>Student #{student.number}</h2>
-              <span className={`status-badge ${statusClass}`}>{statusText}</span>
+            <Link href={`/${instrument}/${student.id}`} key={student.id} className="glass-card" style={{ padding: '1rem' }}>
+              <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Student #{student.number}</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+                {Object.keys(schema).map(selection => {
+                  const isEvaluated = student.scores && student.scores[selection];
+                  return (
+                    <div key={selection} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', padding: '0.3rem', borderRadius: '4px' }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>{abbr[selection] || selection}</span>
+                      {isEvaluated ? (
+                        <span style={{ color: 'var(--success)', fontSize: '0.7rem' }}>Done</span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Incomplete</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </Link>
           );
         })}

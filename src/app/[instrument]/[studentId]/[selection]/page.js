@@ -185,8 +185,8 @@ export default function JudgingForm({ params }) {
       });
       
       if (res.ok) {
-        router.push(`/${instrument}/${studentId}`);
         router.refresh();
+        alert('Evaluation saved!');
       } else {
         alert('Failed to submit scores');
       }
