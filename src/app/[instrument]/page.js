@@ -50,8 +50,15 @@ export default async function InstrumentPage({ params }) {
           
           return (
             <Link href={`/${instrument}/${student.id}`} key={student.id} className="glass-card" style={{ padding: '1rem' }}>
-              <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Student #{student.number}</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '0.75rem' }}>
+                <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Student #{student.number}</h2>
+                {student.studentPlacement && (
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                    Goal: <strong style={{ color: 'var(--text-main)' }}>{student.studentPlacement}</strong>
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Object.keys(schema).length}, 1fr)`, gap: '0.3rem' }}>
                 {Object.keys(schema).map(selection => {
                   const isEvaluated = student.scores && student.scores[selection];
                   return (
